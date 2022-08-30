@@ -14,6 +14,7 @@
 		B57F3AE228AA273E00EA64F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B57F3AE128AA273E00EA64F9 /* Assets.xcassets */; };
 		B57F3AE528AA273E00EA64F9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B57F3AE328AA273E00EA64F9 /* LaunchScreen.storyboard */; };
 		B588AF6228BDFB5000D2266B /* Belet_Films.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B588AF6028BDFB5000D2266B /* Belet_Films.xcdatamodeld */; };
+		B588AF6928BE01CD00D2266B /* KinoExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF6828BE01CD00D2266B /* KinoExtensions.swift */; };
 		C989B46BDE6E62AED29D7252 /* Pods_download_asset.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAC8D5029FF00366A7CFE722 /* Pods_download_asset.framework */; };
 /* End PBXBuildFile section */
 
@@ -29,6 +30,7 @@
 		B57F3AE428AA273E00EA64F9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B57F3AE628AA273E00EA64F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B588AF6128BDFB5000D2266B /* Belet_Films.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Belet_Films.xcdatamodel; sourceTree = "<group>"; };
+		B588AF6828BE01CD00D2266B /* KinoExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinoExtensions.swift; sourceTree = "<group>"; };
 		DAC8D5029FF00366A7CFE722 /* Pods_download_asset.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_download_asset.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -64,7 +66,6 @@
 		B57F3ACC28AA273B00EA64F9 = {
 			isa = PBXGroup;
 			children = (
-				B588AF6028BDFB5000D2266B /* Belet_Films.xcdatamodeld */,
 				B57F3AD728AA273B00EA64F9 /* download_asset */,
 				B57F3AD628AA273B00EA64F9 /* Products */,
 				10EE1819F02053A441FE9583 /* Pods */,
@@ -83,6 +84,7 @@
 		B57F3AD728AA273B00EA64F9 /* download_asset */ = {
 			isa = PBXGroup;
 			children = (
+				B588AF6728BE01B800D2266B /* CoreDataModel */,
 				B588AF6628BDFD1500D2266B /* Delegates */,
 				B588AF6528BDFD0F00D2266B /* Controller */,
 				B588AF6428BDFD0B00D2266B /* View */,
@@ -124,6 +126,15 @@
 				B57F3ADA28AA273B00EA64F9 /* SceneDelegate.swift */,
 			);
 			path = Delegates;
+			sourceTree = "<group>";
+		};
+		B588AF6728BE01B800D2266B /* CoreDataModel */ = {
+			isa = PBXGroup;
+			children = (
+				B588AF6028BDFB5000D2266B /* Belet_Films.xcdatamodeld */,
+				B588AF6828BE01CD00D2266B /* KinoExtensions.swift */,
+			);
+			path = CoreDataModel;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -242,6 +253,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B57F3ADD28AA273B00EA64F9 /* ViewController.swift in Sources */,
+				B588AF6928BE01CD00D2266B /* KinoExtensions.swift in Sources */,
 				B57F3AD928AA273B00EA64F9 /* AppDelegate.swift in Sources */,
 				B588AF6228BDFB5000D2266B /* Belet_Films.xcdatamodeld in Sources */,
 				B57F3ADB28AA273B00EA64F9 /* SceneDelegate.swift in Sources */,
