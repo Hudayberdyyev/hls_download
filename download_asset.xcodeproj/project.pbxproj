@@ -25,6 +25,7 @@
 		B588AF7B28BE1CD300D2266B /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF7A28BE1CD300D2266B /* Track.swift */; };
 		B588AF7D28BE1CF200D2266B /* Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF7C28BE1CF200D2266B /* Download.swift */; };
 		B588AF7F28BE1D1A00D2266B /* DBServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF7E28BE1D1A00D2266B /* DBServices.swift */; };
+		B588AF8128BE30A500D2266B /* InputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF8028BE30A500D2266B /* InputViewController.swift */; };
 		C989B46BDE6E62AED29D7252 /* Pods_download_asset.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAC8D5029FF00366A7CFE722 /* Pods_download_asset.framework */; };
 /* End PBXBuildFile section */
 
@@ -51,6 +52,7 @@
 		B588AF7A28BE1CD300D2266B /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
 		B588AF7C28BE1CF200D2266B /* Download.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Download.swift; sourceTree = "<group>"; };
 		B588AF7E28BE1D1A00D2266B /* DBServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBServices.swift; sourceTree = "<group>"; };
+		B588AF8028BE30A500D2266B /* InputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputViewController.swift; sourceTree = "<group>"; };
 		DAC8D5029FF00366A7CFE722 /* Pods_download_asset.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_download_asset.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -141,6 +143,7 @@
 			isa = PBXGroup;
 			children = (
 				B57F3ADC28AA273B00EA64F9 /* ViewController.swift */,
+				B588AF8028BE30A500D2266B /* InputViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -301,6 +304,7 @@
 				B588AF7928BE1B1400D2266B /* UIViewExt.swift in Sources */,
 				B588AF7F28BE1D1A00D2266B /* DBServices.swift in Sources */,
 				B57F3ADD28AA273B00EA64F9 /* ViewController.swift in Sources */,
+				B588AF8128BE30A500D2266B /* InputViewController.swift in Sources */,
 				B588AF6928BE01CD00D2266B /* KinoExtensions.swift in Sources */,
 				B57F3AD928AA273B00EA64F9 /* AppDelegate.swift in Sources */,
 				B588AF6228BDFB5000D2266B /* Belet_Films.xcdatamodeld in Sources */,

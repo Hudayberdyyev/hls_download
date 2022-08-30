@@ -101,5 +101,7 @@ extension ViewController {
     @objc
     func createDownloadItemButtonTapped(_ sender: UIButton?) {
         print("\(#fileID) => \(#function)")
+        let inputVC = InputViewController()
+        self.navigationController?.pushViewController(inputVC, animated: true)
     }
 }
