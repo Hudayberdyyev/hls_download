@@ -15,6 +15,16 @@
 		B57F3AE528AA273E00EA64F9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B57F3AE328AA273E00EA64F9 /* LaunchScreen.storyboard */; };
 		B588AF6228BDFB5000D2266B /* Belet_Films.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B588AF6028BDFB5000D2266B /* Belet_Films.xcdatamodeld */; };
 		B588AF6928BE01CD00D2266B /* KinoExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF6828BE01CD00D2266B /* KinoExtensions.swift */; };
+		B588AF6B28BE02F300D2266B /* DownloadCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF6A28BE02F300D2266B /* DownloadCell.swift */; };
+		B588AF6D28BE032F00D2266B /* BaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF6C28BE032F00D2266B /* BaseCell.swift */; };
+		B588AF7028BE03ED00D2266B /* FontSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF6F28BE03ED00D2266B /* FontSizes.swift */; };
+		B588AF7228BE041200D2266B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF7128BE041200D2266B /* Constants.swift */; };
+		B588AF7428BE048A00D2266B /* IconNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF7328BE048A00D2266B /* IconNames.swift */; };
+		B588AF7728BE192600D2266B /* UIImageExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF7628BE192600D2266B /* UIImageExt.swift */; };
+		B588AF7928BE1B1400D2266B /* UIViewExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF7828BE1B1400D2266B /* UIViewExt.swift */; };
+		B588AF7B28BE1CD300D2266B /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF7A28BE1CD300D2266B /* Track.swift */; };
+		B588AF7D28BE1CF200D2266B /* Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF7C28BE1CF200D2266B /* Download.swift */; };
+		B588AF7F28BE1D1A00D2266B /* DBServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF7E28BE1D1A00D2266B /* DBServices.swift */; };
 		C989B46BDE6E62AED29D7252 /* Pods_download_asset.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAC8D5029FF00366A7CFE722 /* Pods_download_asset.framework */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +41,16 @@
 		B57F3AE628AA273E00EA64F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B588AF6128BDFB5000D2266B /* Belet_Films.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Belet_Films.xcdatamodel; sourceTree = "<group>"; };
 		B588AF6828BE01CD00D2266B /* KinoExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinoExtensions.swift; sourceTree = "<group>"; };
+		B588AF6A28BE02F300D2266B /* DownloadCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadCell.swift; sourceTree = "<group>"; };
+		B588AF6C28BE032F00D2266B /* BaseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCell.swift; sourceTree = "<group>"; };
+		B588AF6F28BE03ED00D2266B /* FontSizes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSizes.swift; sourceTree = "<group>"; };
+		B588AF7128BE041200D2266B /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		B588AF7328BE048A00D2266B /* IconNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconNames.swift; sourceTree = "<group>"; };
+		B588AF7628BE192600D2266B /* UIImageExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExt.swift; sourceTree = "<group>"; };
+		B588AF7828BE1B1400D2266B /* UIViewExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewExt.swift; sourceTree = "<group>"; };
+		B588AF7A28BE1CD300D2266B /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
+		B588AF7C28BE1CF200D2266B /* Download.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Download.swift; sourceTree = "<group>"; };
+		B588AF7E28BE1D1A00D2266B /* DBServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBServices.swift; sourceTree = "<group>"; };
 		DAC8D5029FF00366A7CFE722 /* Pods_download_asset.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_download_asset.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -84,7 +104,9 @@
 		B57F3AD728AA273B00EA64F9 /* download_asset */ = {
 			isa = PBXGroup;
 			children = (
-				B588AF6728BE01B800D2266B /* CoreDataModel */,
+				B588AF7528BE191500D2266B /* Extensions */,
+				B588AF6E28BE03E200D2266B /* Constants */,
+				B588AF6728BE01B800D2266B /* CoreData */,
 				B588AF6628BDFD1500D2266B /* Delegates */,
 				B588AF6528BDFD0F00D2266B /* Controller */,
 				B588AF6428BDFD0B00D2266B /* View */,
@@ -100,6 +122,8 @@
 		B588AF6328BDFD0200D2266B /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				B588AF7A28BE1CD300D2266B /* Track.swift */,
+				B588AF7C28BE1CF200D2266B /* Download.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -107,6 +131,8 @@
 		B588AF6428BDFD0B00D2266B /* View */ = {
 			isa = PBXGroup;
 			children = (
+				B588AF6A28BE02F300D2266B /* DownloadCell.swift */,
+				B588AF6C28BE032F00D2266B /* BaseCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -128,13 +154,33 @@
 			path = Delegates;
 			sourceTree = "<group>";
 		};
-		B588AF6728BE01B800D2266B /* CoreDataModel */ = {
+		B588AF6728BE01B800D2266B /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
 				B588AF6028BDFB5000D2266B /* Belet_Films.xcdatamodeld */,
 				B588AF6828BE01CD00D2266B /* KinoExtensions.swift */,
+				B588AF7E28BE1D1A00D2266B /* DBServices.swift */,
 			);
-			path = CoreDataModel;
+			path = CoreData;
+			sourceTree = "<group>";
+		};
+		B588AF6E28BE03E200D2266B /* Constants */ = {
+			isa = PBXGroup;
+			children = (
+				B588AF6F28BE03ED00D2266B /* FontSizes.swift */,
+				B588AF7128BE041200D2266B /* Constants.swift */,
+				B588AF7328BE048A00D2266B /* IconNames.swift */,
+			);
+			path = Constants;
+			sourceTree = "<group>";
+		};
+		B588AF7528BE191500D2266B /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B588AF7628BE192600D2266B /* UIImageExt.swift */,
+				B588AF7828BE1B1400D2266B /* UIViewExt.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -252,11 +298,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B588AF7928BE1B1400D2266B /* UIViewExt.swift in Sources */,
+				B588AF7F28BE1D1A00D2266B /* DBServices.swift in Sources */,
 				B57F3ADD28AA273B00EA64F9 /* ViewController.swift in Sources */,
 				B588AF6928BE01CD00D2266B /* KinoExtensions.swift in Sources */,
 				B57F3AD928AA273B00EA64F9 /* AppDelegate.swift in Sources */,
 				B588AF6228BDFB5000D2266B /* Belet_Films.xcdatamodeld in Sources */,
+				B588AF7D28BE1CF200D2266B /* Download.swift in Sources */,
+				B588AF6D28BE032F00D2266B /* BaseCell.swift in Sources */,
 				B57F3ADB28AA273B00EA64F9 /* SceneDelegate.swift in Sources */,
+				B588AF6B28BE02F300D2266B /* DownloadCell.swift in Sources */,
+				B588AF7028BE03ED00D2266B /* FontSizes.swift in Sources */,
+				B588AF7228BE041200D2266B /* Constants.swift in Sources */,
+				B588AF7B28BE1CD300D2266B /* Track.swift in Sources */,
+				B588AF7428BE048A00D2266B /* IconNames.swift in Sources */,
+				B588AF7728BE192600D2266B /* UIImageExt.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

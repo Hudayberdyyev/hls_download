@@ -7,5 +7,9 @@ target 'download_asset' do
 
   # Pods for download_asset
   pod 'HLSCachingReverseProxyServer'
-
+  pod 'SkeletonView'
+  pod 'SnapKit', '~> 5.6.0'
+  pod 'UICircularProgressRing'
+  pod 'SDWebImage'
+  pod 'Alamofire', '~> 5.2'
 end

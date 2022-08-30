@@ -1,4 +1,5 @@
 PODS:
+  - Alamofire (5.6.1)
   - GCDWebServer (3.5.4):
     - GCDWebServer/Core (= 3.5.4)
   - GCDWebServer/Core (3.5.4)
@@ -13,23 +14,44 @@ PODS:
   - PINCache/Core (3.0.3):
     - PINOperation (~> 1.2.1)
   - PINOperation (1.2.1)
+  - SDWebImage (5.13.0):
+    - SDWebImage/Core (= 5.13.0)
+  - SDWebImage/Core (5.13.0)
+  - SkeletonView (1.29.2)
+  - SnapKit (5.6.0)
+  - UICircularProgressRing (8.0.0)
 
 DEPENDENCIES:
+  - Alamofire (~> 5.2)
   - HLSCachingReverseProxyServer
+  - SDWebImage
+  - SkeletonView
+  - SnapKit (~> 5.6.0)
+  - UICircularProgressRing
 
 SPEC REPOS:
   trunk:
+    - Alamofire
     - GCDWebServer
     - HLSCachingReverseProxyServer
     - PINCache
     - PINOperation
+    - SDWebImage
+    - SkeletonView
+    - SnapKit
+    - UICircularProgressRing
 
 SPEC CHECKSUMS:
+  Alamofire: 87bd8c952f9a4454320fce00d9cc3de57bcadaf5
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   HLSCachingReverseProxyServer: 59935e1e0244ad7f3375d75b5ef46e8eb26ab181
   PINCache: 7a8fc1a691173d21dbddbf86cd515de6efa55086
   PINOperation: 00c935935f1e8cf0d1e2d6b542e75b88fc3e5e20
+  SDWebImage: 0327043dbb9533e75f2eff8445b3df0f2ceca6ac
+  SkeletonView: 915a80ecc2b6421ab7ac0f0212321c0cc1406472
+  SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
+  UICircularProgressRing: 19927375b2b21b5fa5fd9582f15ccdef9659da16
 
-PODFILE CHECKSUM: 35817f24e02cd826b4a0042338b5ef18c7d31e84
+PODFILE CHECKSUM: cc4774eba00702fe92457f5279a199256457cba6
 
 COCOAPODS: 1.11.3
