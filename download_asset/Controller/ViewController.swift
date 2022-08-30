@@ -17,7 +17,7 @@ class ViewController: UIViewController {
         cv.delegate = self
         cv.dataSource = self
         cv.register(DownloadCell.self, forCellWithReuseIdentifier: K.Identifiers.downloadCellID)
-        cv.backgroundColor = .red
+        cv.backgroundColor = .clear
         return cv
     }()
     
@@ -81,15 +81,19 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 0
+        return 25
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        return UICollectionViewCell()
+        let optionalCell = collectionView.dequeueReusableCell(withReuseIdentifier: K.Identifiers.downloadCellID, for: indexPath)
+        
+        let cell = optionalCell as! DownloadCell
+        cell.backgroundColor = .clouds
+        return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return .zero
+        return CGSize(width: view.frame.width, height: 50)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
