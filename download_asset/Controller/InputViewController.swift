@@ -17,6 +17,12 @@ class InputViewController: UIViewController {
     private let widthMultiplier: CGFloat = 0.3
     
     //MARK: - UIControls
+    private let scrollView: UIScrollView = {
+        let sv = UIScrollView()
+        sv.backgroundColor = .clear
+        return sv
+    }()
+    
     private lazy var coverUrlTextField: UITextField = {
         let tf = UITextField()
         tf.backgroundColor = .clear
@@ -192,25 +198,40 @@ class InputViewController: UIViewController {
     //MARK: - View methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.setupInitialConfigurations()
         self.setupViews()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.dismissKeyboard()
+    }
+    
+    private func setupInitialConfigurations() {
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewControllerTapped(_:))))
+    }
+    
     private func setupViews() {
-        view.addSubview(coverUrlLabel)
+        view.addSubview(scrollView)
+        scrollView.snp.makeConstraints { make in
+            make.edges.equalTo(view)
+        }
+        
+        scrollView.addSubview(coverUrlLabel)
         coverUrlLabel.snp.makeConstraints { make in
             make.leading.top.equalTo(view)
             make.width.equalTo(view).multipliedBy(widthMultiplier)
             make.height.equalTo(view).multipliedBy(itemHeightConstant)
         }
         
-        view.addSubview(coverUrlTextField)
+        scrollView.addSubview(coverUrlTextField)
         coverUrlTextField.snp.makeConstraints { make in
             make.trailing.top.equalTo(view)
             make.leading.equalTo(coverUrlLabel.snp.trailing).offset(offsetConstant)
             make.height.equalTo(view).multipliedBy(itemHeightConstant)
         }
         
-        view.addSubview(durationLabel)
+        scrollView.addSubview(durationLabel)
         durationLabel.snp.makeConstraints { make in
             make.leading.equalTo(view)
             make.top.equalTo(coverUrlLabel.snp.bottom).offset(offsetConstant)
@@ -218,7 +239,7 @@ class InputViewController: UIViewController {
             make.height.equalTo(view).multipliedBy(itemHeightConstant)
         }
         
-        view.addSubview(durationTextField)
+        scrollView.addSubview(durationTextField)
         durationTextField.snp.makeConstraints { make in
             make.top.equalTo(coverUrlTextField.snp.bottom).offset(offsetConstant)
             make.trailing.equalTo(view)
@@ -226,7 +247,7 @@ class InputViewController: UIViewController {
             make.height.equalTo(view).multipliedBy(itemHeightConstant)
         }
         
-        view.addSubview(movieIdLabel)
+        scrollView.addSubview(movieIdLabel)
         movieIdLabel.snp.makeConstraints { make in
             make.leading.equalTo(view)
             make.top.equalTo(durationLabel.snp.bottom).offset(offsetConstant)
@@ -234,7 +255,7 @@ class InputViewController: UIViewController {
             make.height.equalTo(view).multipliedBy(itemHeightConstant)
         }
         
-        view.addSubview(movieIdTextField)
+        scrollView.addSubview(movieIdTextField)
         movieIdTextField.snp.makeConstraints { make in
             make.top.equalTo(durationTextField.snp.bottom).offset(offsetConstant)
             make.trailing.equalTo(view)
@@ -242,7 +263,7 @@ class InputViewController: UIViewController {
             make.height.equalTo(view).multipliedBy(itemHeightConstant)
         }
         
-        view.addSubview(movieNameLabel)
+        scrollView.addSubview(movieNameLabel)
         movieNameLabel.snp.makeConstraints { make in
             make.top.equalTo(movieIdLabel.snp.bottom).offset(offsetConstant)
             make.leading.equalTo(view)
@@ -250,7 +271,7 @@ class InputViewController: UIViewController {
             make.height.equalTo(view).multipliedBy(itemHeightConstant)
         }
         
-        view.addSubview(movieNameTextField)
+        scrollView.addSubview(movieNameTextField)
         movieNameTextField.snp.makeConstraints { make in
             make.top.equalTo(movieIdTextField.snp.bottom).offset(offsetConstant)
             make.leading.equalTo(movieNameLabel.snp.trailing).offset(offsetConstant)
@@ -258,7 +279,7 @@ class InputViewController: UIViewController {
             make.height.equalTo(view).multipliedBy(itemHeightConstant)
         }
         
-        view.addSubview(stateLabel)
+        scrollView.addSubview(stateLabel)
         stateLabel.snp.makeConstraints { make in
             make.top.equalTo(movieNameLabel.snp.bottom).offset(offsetConstant)
             make.leading.equalTo(view)
@@ -266,7 +287,7 @@ class InputViewController: UIViewController {
             make.height.equalTo(view).multipliedBy(itemHeightConstant)
         }
         
-        view.addSubview(stateTextField)
+        scrollView.addSubview(stateTextField)
         stateTextField.snp.makeConstraints { make in
             make.top.equalTo(movieNameTextField.snp.bottom).offset(offsetConstant)
             make.leading.equalTo(stateLabel.snp.trailing).offset(offsetConstant)
@@ -274,7 +295,7 @@ class InputViewController: UIViewController {
             make.height.equalTo(view).multipliedBy(itemHeightConstant)
         }
         
-        view.addSubview(sourceUrlLabel)
+        scrollView.addSubview(sourceUrlLabel)
         sourceUrlLabel.snp.makeConstraints { make in
             make.top.equalTo(stateLabel.snp.bottom).offset(offsetConstant)
             make.leading.equalTo(view)
@@ -282,7 +303,7 @@ class InputViewController: UIViewController {
             make.height.equalTo(view).multipliedBy(itemHeightConstant)
         }
         
-        view.addSubview(sourceUrlTextField)
+        scrollView.addSubview(sourceUrlTextField)
         sourceUrlTextField.snp.makeConstraints { make in
             make.top.equalTo(stateTextField.snp.bottom).offset(offsetConstant)
             make.leading.equalTo(sourceUrlLabel.snp.trailing).offset(offsetConstant)
@@ -290,7 +311,7 @@ class InputViewController: UIViewController {
             make.height.equalTo(view).multipliedBy(itemHeightConstant)
         }
         
-        view.addSubview(createButton)
+        scrollView.addSubview(createButton)
         createButton.snp.makeConstraints { make in
             make.top.equalTo(sourceUrlTextField.snp.bottom).offset(offsetConstant)
             make.centerX.equalTo(view)
@@ -306,5 +327,49 @@ extension InputViewController {
     @objc
     func createButtonTapped(_ sender: UIButton?) {
         print("\(#fileID) => \(#function)")
+        do {
+            let movieId: Int = Int(movieIdTextField.text ?? "") ?? 0
+            let movieName: String = movieNameTextField.text ?? ""
+            let duration: String = durationTextField.text ?? ""
+            let downloadURL: String = sourceUrlTextField.text ?? ""
+            let imageURL: String = coverUrlTextField.text ?? ""
+            let seasonIndex: Int = 0
+            let episodeIndex: Int = 0
+            let isSerial: Bool = false
+            let downloadingState: DownloadingState = .downloading
+            
+            try DBServices.sharedInstance.addKinoToDB(
+                id: movieId,
+                movieName: movieName,
+                duration: duration,
+                downloadURL: downloadURL,
+                imageURL: imageURL,
+                seasonIndex: seasonIndex,
+                episodeIndex: episodeIndex,
+                isSerial: isSerial,
+                downloadingState: downloadingState
+            )
+        } catch let err {
+            print(err.localizedDescription)
+        }
+        
+    }
+    
+    @objc
+    func viewControllerTapped(_ sender: Any?) {
+        print("\(#fileID) => \(#function)")
+        if (sender as? UITextField) != nil {
+            return
+        }
+        
+        dismissKeyboard()
+    }
+    
+    private func dismissKeyboard() {
+        let textFields = scrollView.subviews.compactMap { $0 as? UITextField }
+        
+        for textFieldItem in textFields {
+            textFieldItem.resignFirstResponder()
+        }
     }
 }
