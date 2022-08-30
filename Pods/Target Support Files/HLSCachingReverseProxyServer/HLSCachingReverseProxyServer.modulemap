@@ -1,0 +1,6 @@
+framework module HLSCachingReverseProxyServer {
+  umbrella header "HLSCachingReverseProxyServer-umbrella.h"
+
+  export *
+  module * { export * }
+}
