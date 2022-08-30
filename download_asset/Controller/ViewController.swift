@@ -17,8 +17,18 @@ class ViewController: UIViewController {
         cv.delegate = self
         cv.dataSource = self
         cv.register(DownloadCell.self, forCellWithReuseIdentifier: K.Identifiers.downloadCellID)
-        cv.backgroundColor = .black
+        cv.backgroundColor = .red
         return cv
+    }()
+    
+    private let createDownloadItemButton: UIButton = {
+        let b = UIButton()
+        b.backgroundColor = .systemBlue
+        b.layer.cornerRadius = 7
+        b.clipsToBounds = true
+        b.setTitle("Добавить новую загрузку", for: .normal)
+        b.setTitleColor(UIColor.white, for: .normal)
+        return b
     }()
     
     //MARK: - View methods
@@ -26,6 +36,8 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         self.setupInitialConfigurations()
+        self.setupViews()
+        self.setupGestureRecognizers()
     }
     
     private func setupInitialConfigurations() {
@@ -38,6 +50,27 @@ class ViewController: UIViewController {
         self.navigationController!.navigationBar.isTranslucent = false
         self.navigationController!.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
         self.navigationController!.navigationBar.topItem?.title = "Загрузки"
+    }
+    
+    private func setupViews() {
+        view.addSubview(createDownloadItemButton)
+        createDownloadItemButton.snp.makeConstraints { make in
+            make.centerX.equalTo(view)
+            make.width.equalTo(view).multipliedBy(0.6)
+            make.height.equalTo(40)
+            make.bottom.equalTo(view).offset(-15)
+        }
+        
+        view.addSubview(filmsCollectionView)
+        filmsCollectionView.snp.makeConstraints { make in
+            make.leading.trailing.top.equalTo(view)
+            make.bottom.equalTo(createDownloadItemButton.snp.top).offset(-10)
+        }
+        
+    }
+    
+    private func setupGestureRecognizers() {
+        createDownloadItemButton.addTarget(self, action: #selector(createDownloadItemButtonTapped(_:)), for: .touchUpInside)
     }
 }
 
@@ -60,6 +93,13 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("\(#fileID) => \(#function)")
+    }
+}
+
+extension ViewController {
+    @objc
+    func createDownloadItemButtonTapped(_ sender: UIButton?) {
         print("\(#fileID) => \(#function)")
     }
 }
