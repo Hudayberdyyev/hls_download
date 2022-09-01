@@ -55,13 +55,6 @@ class DownloadCell: BaseCell {
         return bt
     }()
     
-    let cancelButton:UIButton = {
-        let bt = UIButton()
-        bt.setTitle("cancel", for: .normal)
-        bt.isUserInteractionEnabled = false
-        return bt
-    }()
-    
     let downloadButton:UIButton = {
         let bt = UIButton()
         bt.setTitle("", for: .normal)
@@ -77,12 +70,6 @@ class DownloadCell: BaseCell {
         bt.isUserInteractionEnabled = false
         bt.isHidden = true
         return bt
-    }()
-    
-    let progressView:UIProgressView = {
-        let pv = UIProgressView()
-        pv.backgroundColor = .blue
-        return pv
     }()
     
     lazy var progressView2: UICircularProgressRing = {
@@ -163,11 +150,6 @@ class DownloadCell: BaseCell {
         
         self.backgroundColor = .black
         
-        
-        self.contentView.addSubview(cancelButton)
-        cancelButton.isHidden = true
-        
-        self.contentView.addSubview(progressView)
         self.contentView.addSubview(progressView2)
         self.contentView.addSubview(downloadButton)
         self.contentView.addSubview(deleteButton)
@@ -195,11 +177,8 @@ class DownloadCell: BaseCell {
         downloadButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 0, left: 0, bottom: 0, right: 0), size: .init(width: 20, height: 20))
         
         self.addConstraints([NSLayoutConstraint.init(item: downloadButton, attribute: .centerX, relatedBy: .equal, toItem: progressView2, attribute: .centerX, multiplier: 1, constant: 0),NSLayoutConstraint.init(item: downloadButton, attribute: .centerY, relatedBy: .equal, toItem: progressView2, attribute: .centerY, multiplier: 1, constant: 0),NSLayoutConstraint.init(item: pauseButton, attribute: .centerX, relatedBy: .equal, toItem: progressView2, attribute: .centerX, multiplier: 1, constant: 0),NSLayoutConstraint.init(item: pauseButton, attribute: .centerY, relatedBy: .equal, toItem: progressView2, attribute: .centerY, multiplier: 1, constant: 0),NSLayoutConstraint.init(item: resumeButton, attribute: .centerX, relatedBy: .equal, toItem: progressView2, attribute: .centerX, multiplier: 1, constant: 0),NSLayoutConstraint.init(item: resumeButton, attribute: .centerY, relatedBy: .equal, toItem: progressView2, attribute: .centerY, multiplier: 1, constant: 0)])
-        
-        cancelButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 0, left: 0, bottom: 0, right: 0), size: .init(width: 20, height: 20))
         resumeButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 0, left: 0, bottom: 0, right: 0), size: .init(width: 20, height: 20))
         pauseButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 0, left: 0, bottom: 0, right: 0), size: .init(width: 20, height: 20))
-        progressView.anchor(top: pauseButton.bottomAnchor, leading: coverImage.trailingAnchor, bottom: nil, trailing: nil, padding: .init(top: 8, left: 8, bottom: 8, right: 8), size: .init(width: 0, height: 3))
         
         
         
@@ -208,7 +187,6 @@ class DownloadCell: BaseCell {
         progressView2.shouldShowValueText = false
         
         downloadButton.addTarget(self, action: #selector(downloadBasdy(button:)), for: .touchUpInside)
-        cancelButton.addTarget(self, action: #selector(cancelBasdy(button:)), for: .touchUpInside)
         pauseButton.addTarget(self, action: #selector(pauseBasdy(button:)), for: .touchUpInside)
         
         deleteButton.isHidden = true
@@ -308,13 +286,6 @@ class DownloadCell: BaseCell {
             pauseButton.isHidden = true
             progressLabel.isHidden = false
         }
-        
-        progressView2.isHidden = true
-        progressView2.backgroundColor = .red
-        downloadButton.backgroundColor = .orange
-        resumeButton.backgroundColor = .yellow
-        pauseButton.backgroundColor = .green
-        progressLabel.backgroundColor = .blue
         
         removeButton.isHidden = !isEditTapped
         self.layoutIfNeeded()
