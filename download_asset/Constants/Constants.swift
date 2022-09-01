@@ -8,6 +8,10 @@
 import Foundation
 
 struct K {
+    struct Tokens {
+        static let access = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjk3fQ.c3Hnysn5_aB8YLnzty-5eXEcZVLYz0Aj5lz6-wslX8g"
+    }
+    
     struct Fonts {
         static let mPlusRegular = "Mplus-Regular"
         static let productSansBold = "ProductSans-Bold"

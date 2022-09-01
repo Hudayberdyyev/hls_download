@@ -6,9 +6,15 @@
 //
 
 import UIKit
+import SnapKit
+import SDWebImage
 
 class ViewController: UIViewController {
-
+    
+    //MARK: - Properties
+    private var downloadsList: [Track] = []
+    private var downloadsCoreData: [Kino] = []
+    
     //MARK: - UIControls
     lazy var filmsCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -40,16 +46,21 @@ class ViewController: UIViewController {
         self.setupGestureRecognizers()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.loadDownloadsFromDB()
+    }
+    
     private func setupInitialConfigurations() {
         print("\(#fileID) => \(#function)")
         /// Set background as black
         self.view.backgroundColor = .black
         
         /// Navigation bar configurations
-        self.navigationController!.navigationBar.barStyle = .black
-        self.navigationController!.navigationBar.isTranslucent = false
-        self.navigationController!.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
-        self.navigationController!.navigationBar.topItem?.title = "Загрузки"
+        self.navigationController?.navigationBar.barStyle = .black
+        self.navigationController?.navigationBar.isTranslucent = false
+        self.navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
+        self.navigationController?.navigationBar.topItem?.title = "Загрузки"
     }
     
     private func setupViews() {
@@ -81,23 +92,48 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 25
+        return self.downloadsList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let optionalCell = collectionView.dequeueReusableCell(withReuseIdentifier: K.Identifiers.downloadCellID, for: indexPath)
         
         let cell = optionalCell as! DownloadCell
-        cell.backgroundColor = .clouds
+        
+        let track = self.downloadsList[indexPath.row]
+        cell.configure(track: track,
+                       downloaded: track.dbRecord.downloaded,
+                       download: nil)
+        
+        if track.dbRecord.cover_url != nil {
+            /// Download and set image
+            if let url = URL(string: track.dbRecord.cover_url ?? "") {
+                cell.coverImage.sd_imageIndicator = SDWebImageActivityIndicator.gray
+                cell.coverImage.sd_setImage(with: url) { (image, error, cache, urls) in
+                    if error != nil {
+                        print("Job failed: \(error?.localizedDescription)")
+                    } else {
+                        /// Image loaded successfully
+                    }
+                }
+            }
+        } else {
+            cell.coverImage.image = UIImage(named: "logo-light")
+            cell.coverImage.contentMode = .scaleAspectFit
+        }
+        
+        cell.delegate = self
+        cell.editDelegate = self
+        cell.updateDisplay(progress: 0.25, totalSize: "185MB")
+        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width, height: 50)
+        return CGSize(width: view.frame.width, height: 85)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("\(#fileID) => \(#function)")
     }
 }
 
@@ -107,5 +143,66 @@ extension ViewController {
         print("\(#fileID) => \(#function)")
         let inputVC = InputViewController()
         self.navigationController?.pushViewController(inputVC, animated: true)
+    }
+}
+
+//MARK: - Helper methods
+extension ViewController {
+    private func loadDownloadsFromDB() {
+        /// Retrieve films from core data
+        self.downloadsCoreData = DBServices.sharedInstance.getKino()
+        self.downloadsList = []
+        
+        var index = 0
+        for kino in self.downloadsCoreData {
+            guard let url = URL(string: kino.url ?? "") else {
+                /// Remove it from core data
+                let movieId = kino.id
+                DBServices.sharedInstance.deleteKinoFromDB(id: Int(movieId)) { isOk in
+                    if isOk {
+                        print("movie with id = \(movieId) successfully removed")
+                    } else {
+                        print("movie with id = \(movieId) remove fail with error")
+                    }
+                }
+                
+                continue
+            }
+            let track = Track(name: kino.k_name ?? "Название фильма", dbRecord: kino, previewURL: url, index: index)
+            track.downloaded = kino.downloaded
+            self.downloadsList.append(track)
+            index += 1
+        }
+        
+        print("count of downloading films = \(self.downloadsList.count)")
+        
+        self.filmsCollectionView.reloadData()
+    }
+}
+
+//MARK: - TrackCell delegate, EditDownloads delegate methods
+extension ViewController: TrackCellDelegate, EditDownloadsDelegate {
+    func cancelTapped(_ cell: DownloadCell) {
+        print("\(#fileID) => \(#function)")
+    }
+    
+    func downloadTapped(_ cell: DownloadCell) {
+        print("\(#fileID) => \(#function)")
+    }
+    
+    func pauseTapped(_ cell: DownloadCell) {
+        print("\(#fileID) => \(#function)")
+    }
+    
+    func resumeTapped(_ cell: DownloadCell) {
+        print("\(#fileID) => \(#function)")
+    }
+    
+    func deleteKinoTapped(_ cell: DownloadCell) {
+        print("\(#fileID) => \(#function)")
+    }
+    
+    func forwardOrEditButtonTapped(on baseCell: UICollectionViewCell) {
+        print("\(#fileID) => \(#function)")
     }
 }

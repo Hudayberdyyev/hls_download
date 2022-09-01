@@ -25,7 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let rootVC = ViewController()
         rootVC.modalPresentationStyle = .fullScreen
         rootVC.modalPresentationCapturesStatusBarAppearance = true
-        window?.rootViewController = rootVC
+        window?.rootViewController = UINavigationController(rootViewController: rootVC)
         window?.makeKeyAndVisible()
     }
 

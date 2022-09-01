@@ -309,8 +309,14 @@ class DownloadCell: BaseCell {
             progressLabel.isHidden = false
         }
         
-        removeButton.isHidden = !isEditTapped
+        progressView2.isHidden = true
+        progressView2.backgroundColor = .red
+        downloadButton.backgroundColor = .orange
+        resumeButton.backgroundColor = .yellow
+        pauseButton.backgroundColor = .green
+        progressLabel.backgroundColor = .blue
         
+        removeButton.isHidden = !isEditTapped
         self.layoutIfNeeded()
     }
     

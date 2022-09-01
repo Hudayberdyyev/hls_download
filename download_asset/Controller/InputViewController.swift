@@ -349,6 +349,8 @@ extension InputViewController {
                 isSerial: isSerial,
                 downloadingState: downloadingState
             )
+            
+            try DBServices.sharedInstance.saveContext()
         } catch let err {
             print(err.localizedDescription)
         }
