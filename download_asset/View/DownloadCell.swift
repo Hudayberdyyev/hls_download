@@ -63,6 +63,13 @@ class DownloadCell: BaseCell {
         return bt
     }()
     
+    let refreshButton:UIButton = {
+        let bt = UIButton()
+        bt.setTitle("", for: .normal)
+        bt.setImage(Icon.Refresh1.image().withRenderingMode(.alwaysTemplate), for: .normal)
+        return bt
+    }()
+    
     let resumeButton:UIButton = {
         let bt = UIButton()
         bt.setTitle("", for: .normal)
@@ -112,16 +119,6 @@ class DownloadCell: BaseCell {
         label.font = F.DownloadFontGroup.descFont
         return label
     }()
-        
-    let deleteButton:UIButton = {
-        let button = UIButton()
-        button.layer.cornerRadius = 10
-        button.backgroundColor = .clear
-        button.setImage(UIImage(named: "baseline_delete_black_48")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.tintColor = .red
-        button.setTitleColor(.black, for: .normal)
-        return button
-    }()
     
     let coverImage:UIImageView = {
         let image = UIImageView()
@@ -132,17 +129,12 @@ class DownloadCell: BaseCell {
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
     }()
-     
-    
-    let innerView = UIView()
     
     override func setupViews() {
         
         
         self.addSubview(coverImage)
         coverImage.backgroundColor = .darkClouds
-        
-        self.contentView.addSubview(innerView)
         
         self.addSubview(titleLabel)
         self.addSubview(durationLabel)
@@ -152,11 +144,9 @@ class DownloadCell: BaseCell {
         
         self.contentView.addSubview(progressView2)
         self.contentView.addSubview(downloadButton)
-        self.contentView.addSubview(deleteButton)
         self.contentView.addSubview(pauseButton)
         self.contentView.addSubview(resumeButton)
-        self.deleteButton.bringSubviewToFront(self.contentView)
-        
+        self.contentView.addSubview(refreshButton)
         
 //        coverImage.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: nil, padding: .init(top: 8, left: 12, bottom: 4, right: 12))
         
@@ -189,23 +179,21 @@ class DownloadCell: BaseCell {
         downloadButton.addTarget(self, action: #selector(downloadBasdy(button:)), for: .touchUpInside)
         pauseButton.addTarget(self, action: #selector(pauseBasdy(button:)), for: .touchUpInside)
         
-        deleteButton.isHidden = true
-        deleteButton.anchor(top: nil, leading: nil, bottom: self.bottomAnchor, trailing: self.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 8, right: 8), size: .init(width: 20, height: 20))
-        
-        deleteButton.addTarget(self, action: #selector(deleteAction(button:)), for: .touchUpInside)
         resumeButton.addTarget(self, action: #selector(resumeBasdy(button:)), for: .touchUpInside)
         
-        addSubview(removeButton)
+        self.contentView.addSubview(removeButton)
         removeButton.snp.makeConstraints { (make) in
             make.height.width.equalTo(40)
             make.center.equalTo(progressView2)
         }
         removeButton.isHidden = true
-    }
-    
-    @objc func deleteAction(button:UIButton){
-        print("\(#fileID) => \(#function)")
-        delegate?.deleteKinoTapped(self)
+
+        refreshButton.snp.makeConstraints { make in
+            make.height.width.equalTo(40)
+            make.center.equalTo(progressView2)
+        }
+        refreshButton.isHidden = false
+        refreshButton.addTarget(self, action: #selector(refreshButtonTapped(_:)), for: .touchUpInside)
     }
     
     @objc func downloadBasdy(button:UIButton){
@@ -214,11 +202,6 @@ class DownloadCell: BaseCell {
         self.downloadButton.isHidden = true
         self.pauseButton.isHidden = false
         self.resumeButton.isHidden = true
-    }
-    
-    @objc func cancelBasdy(button:UIButton){
-        print("\(#fileID) => \(#function)")
-        delegate?.cancelTapped(self)
     }
     
     @objc func resumeBasdy(button:UIButton){
@@ -286,7 +269,8 @@ class DownloadCell: BaseCell {
             pauseButton.isHidden = true
             progressLabel.isHidden = false
         }
-        
+        self.downloadButton.isHidden = true
+        self.progressView2.isHidden = true
         removeButton.isHidden = !isEditTapped
         self.layoutIfNeeded()
     }
@@ -307,5 +291,10 @@ extension DownloadCell {
     private func removeButtonTapped(_ sender: UIButton?) {
         print("\(#fileID) => \(#function)")
         self.editDelegate?.forwardOrEditButtonTapped(on: self)
+    }
+    
+    @objc
+    private func refreshButtonTapped(_ sender: UIButton?) {
+        print("\(#fileID) => \(#function)")
     }
 }

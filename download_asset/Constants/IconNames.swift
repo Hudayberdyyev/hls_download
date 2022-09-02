@@ -21,6 +21,7 @@ enum Icon: String {
     case Icon1
     case Cancel1
     case Success1
+    case Refresh1
     
     func image(selected: Bool = false) -> UIImage {
         return UIImage(named: selected ? (self.rawValue+"-selected") : self.rawValue)!
