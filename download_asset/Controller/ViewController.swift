@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     //MARK: - Properties
     private var downloadsList: [HLSObject] = []
     private var downloadsCoreData: [Kino] = []
+    private var isEditTapped: Bool = false
     
     //MARK: - UIControls
     lazy var filmsCollectionView: UICollectionView = {
@@ -48,7 +49,21 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        self.setupEditButtonOnNavigationBar()
         self.loadDownloadsFromDB()
+    }
+    
+    private func setupEditButtonOnNavigationBar() {
+        let barButtonItem = UIBarButtonItem(
+            image: Icon.Pencil1.image().resizeImage(toSize: CGSize(width: 20, height: 20))?.withRenderingMode(.alwaysTemplate),
+            style: .plain,
+            target: self,
+            action: #selector(editButtonTappedOnNavBar(_:))
+        )
+        barButtonItem.tintColor = .lightGray
+        barButtonItem.imageInsets = .init(top: 0, left: 5, bottom: 0, right: 5)
+        self.navigationItem.rightBarButtonItem = barButtonItem
     }
     
     private func setupInitialConfigurations() {
@@ -99,31 +114,8 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
         let optionalCell = collectionView.dequeueReusableCell(withReuseIdentifier: K.Identifiers.downloadCellID, for: indexPath)
         
         let cell = optionalCell as! DownloadCell
-        /*
-        let track = self.downloadsList[indexPath.row]
-        cell.configure(track: track,
-                       downloaded: track.dbRecord.downloaded,
-                       download: nil)
-        
-        if track.dbRecord.cover_url != nil {
-            /// Download and set image
-            if let url = URL(string: track.dbRecord.cover_url ?? "") {
-                cell.coverImage.sd_imageIndicator = SDWebImageActivityIndicator.gray
-                cell.coverImage.sd_setImage(with: url) { (image, error, cache, urls) in
-                    if error != nil {
-                        print("Job failed: \(error?.localizedDescription)")
-                    } else {
-                        /// Image loaded successfully
-                    }
-                }
-            }
-        } else {
-            cell.coverImage.image = UIImage(named: "logo-light")
-            cell.coverImage.contentMode = .scaleAspectFit
-        }
-         */
         let hlsObject = self.downloadsList[indexPath.row]
-        cell.configure(hlsObject: hlsObject)
+        cell.configure(hlsObject: hlsObject, isEditTapped: self.isEditTapped)
         cell.delegate = self
         cell.editDelegate = self
         
@@ -190,9 +182,6 @@ extension ViewController {
 
 //MARK: - TrackCell delegate, EditDownloads delegate methods
 extension ViewController: TrackCellDelegate, EditDownloadsDelegate {
-    func cancelTapped(_ cell: DownloadCell) {
-        print("\(#fileID) => \(#function)")
-    }
     
     func downloadTapped(_ cell: DownloadCell) {
         print("\(#fileID) => \(#function)")
@@ -222,5 +211,27 @@ extension ViewController: TrackCellDelegate, EditDownloadsDelegate {
             let index = indexPath.row
             
         }
+    }
+}
+
+//MARK: - Gesture methods
+extension ViewController {
+    @objc
+    func editButtonTappedOnNavBar(_ sender: UIButton?) {
+        print("\(#fileID) => \(#function)")
+        self.isEditTapped = !isEditTapped
+        
+        if isEditTapped {
+            self.navigationController?.navigationBar.backgroundColor = .systemRed
+            self.navigationItem.rightBarButtonItem?.image =  Icon.Close1.image().resizeImage(toSize: CGSize(width: 20, height: 20))?.withRenderingMode(.alwaysTemplate)
+            self.navigationItem.rightBarButtonItem?.tintColor = .white
+            
+        } else {
+            self.navigationController?.navigationBar.backgroundColor = .black
+            self.navigationItem.rightBarButtonItem?.image =  Icon.Pencil1.image().resizeImage(toSize: CGSize(width: 20, height: 20))?.withRenderingMode(.alwaysTemplate)
+            self.navigationItem.rightBarButtonItem?.tintColor = .lightGray
+        }
+        
+        self.filmsCollectionView.reloadData()
     }
 }

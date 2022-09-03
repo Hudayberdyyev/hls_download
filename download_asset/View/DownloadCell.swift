@@ -12,7 +12,6 @@ import SnapKit
 import SDWebImage
 
 protocol TrackCellDelegate {
-    func cancelTapped(_ cell: DownloadCell)
     func downloadTapped(_ cell: DownloadCell)
     func pauseTapped(_ cell: DownloadCell)
     func resumeTapped(_ cell: DownloadCell)
@@ -283,7 +282,10 @@ class DownloadCell: BaseCell {
         self.layoutIfNeeded()
     }
     
-    public func configure(hlsObject: HLSObject) {
+    public func configure(
+        hlsObject: HLSObject,
+        isEditTapped: Bool = false
+    ) {
         
         /// Set general properties
         self.titleLabel.text = hlsObject.name
@@ -308,6 +310,12 @@ class DownloadCell: BaseCell {
         else if hlsObject.state == .downloaded {
             configureCellForDownloadedState(hlsObject: hlsObject)
         }
+        
+        
+        /// Edit mode enabled
+        if isEditTapped {
+            configureCellForEditMode()
+        }
     }
     
     private func configureThumbnailImage(thumbnailUrl: URL?) {
@@ -321,6 +329,14 @@ class DownloadCell: BaseCell {
                 /// Load image success
             }
         }
+    }
+    
+    private func configureCellForEditMode() {
+        self.downloadButton.disableButton()
+        self.resumeButton.disableButton()
+        self.pauseButton.disableButton()
+        self.refreshButton.disableButton()
+        self.removeButton.enableButton()
     }
     
     private func configureCellForNotDownloadedState(hlsObject: HLSObject) {
