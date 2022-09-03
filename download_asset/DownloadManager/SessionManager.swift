@@ -8,11 +8,18 @@
 import Foundation
 import AVFoundation
 
+protocol SessionManagerDelegate {
+    func updateProgress(for downloadItem: Download, with progress: Double, total size: Int64)
+    func downloadFinishedSuccessfully(streamUrl url: URL, for downloadItem: Download, with location: URL)
+    func downloadFailWithError(for downloadItem: Download)
+    func notAvailableSpace(for downloadItem: Download)
+}
+
 final internal class SessionManager: NSObject {
     //MARK: - Properties
     
     static let shared = SessionManager()
-    
+
     internal let homeDirectoryURL = URL(fileURLWithPath: NSHomeDirectory())
     private var session: AVAssetDownloadURLSession!
     
@@ -55,5 +62,9 @@ extension SessionManager: AVAssetDownloadDelegate {
     
     func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask, didLoad timeRange: CMTimeRange, totalTimeRangesLoaded loadedTimeRanges: [NSValue], timeRangeExpectedToLoad: CMTimeRange) {
         /// Monitor progress
+//        guard let hlsion = downloadingMap[assetDownloadTask] else { return }
+//        hlsion.result = nil
+//        guard let progressClosure = hlsion.progressClosure else { return }
+        
     }
 }

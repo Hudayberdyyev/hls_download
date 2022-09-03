@@ -7,11 +7,11 @@
 
 import Foundation
 
-enum DownloadingState: Int32 {
-    case `downloading` = 0
-    case `paused` = 1
-    case `downloaded` = 2
-    case `failed` = 3
+public enum DownloadingState: Int32 {
+    case `notDownloaded` = 0
+    case `downloading` = 1
+    case `paused` = 2
+    case `downloaded` = 3
 }
 
 extension Kino {

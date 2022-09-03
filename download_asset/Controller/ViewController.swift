@@ -12,7 +12,7 @@ import SDWebImage
 class ViewController: UIViewController {
     
     //MARK: - Properties
-    private var downloadsList: [Track] = []
+    private var downloadsList: [HLSObject] = []
     private var downloadsCoreData: [Kino] = []
     
     //MARK: - UIControls
@@ -99,7 +99,7 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
         let optionalCell = collectionView.dequeueReusableCell(withReuseIdentifier: K.Identifiers.downloadCellID, for: indexPath)
         
         let cell = optionalCell as! DownloadCell
-        
+        /*
         let track = self.downloadsList[indexPath.row]
         cell.configure(track: track,
                        downloaded: track.dbRecord.downloaded,
@@ -121,10 +121,11 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
             cell.coverImage.image = UIImage(named: "logo-light")
             cell.coverImage.contentMode = .scaleAspectFit
         }
-        
+         */
+        let hlsObject = self.downloadsList[indexPath.row]
+        cell.configure(hlsObject: hlsObject)
         cell.delegate = self
         cell.editDelegate = self
-        cell.updateDisplay(progress: 0.25, totalSize: "185MB")
         
         return cell
     }
@@ -169,9 +170,15 @@ extension ViewController {
                 
                 continue
             }
-            let track = Track(name: kino.k_name ?? "Название фильма", dbRecord: kino, previewURL: url, index: index)
-            track.downloaded = kino.downloaded
-            self.downloadsList.append(track)
+            /// Thumbnail url,  Movie id, Stream url, Movie name
+            
+            let headers: [String: String] = [
+                "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjk3fQ.c3Hnysn5_aB8YLnzty-5eXEcZVLYz0Aj5lz6-wslX8g"
+            ]
+            let hlsObject = HLSObject(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": headers], name: kino.k_name ?? "", state: kino.downloadingState, thumbnailUrl: URL(string: kino.cover_url ?? ""), movieId: Int(kino.id))
+            
+            self.downloadsList.append(hlsObject)
+            
             index += 1
         }
         
@@ -205,5 +212,15 @@ extension ViewController: TrackCellDelegate, EditDownloadsDelegate {
     
     func forwardOrEditButtonTapped(on baseCell: UICollectionViewCell) {
         print("\(#fileID) => \(#function)")
+    }
+    
+    func refreshButtonTapped(on baseCell: UICollectionViewCell) {
+        print("\(#fileID) => \(#function)")
+        if let cell = baseCell as? DownloadCell,
+           let indexPath = filmsCollectionView.indexPath(for: cell)
+        {
+            let index = indexPath.row
+            
+        }
     }
 }

@@ -9,6 +9,7 @@ import UIKit
 import SkeletonView
 import UICircularProgressRing
 import SnapKit
+import SDWebImage
 
 protocol TrackCellDelegate {
     func cancelTapped(_ cell: DownloadCell)
@@ -20,6 +21,7 @@ protocol TrackCellDelegate {
 
 protocol EditDownloadsDelegate {
     func forwardOrEditButtonTapped(on baseCell: UICollectionViewCell)
+    func refreshButtonTapped(on baseCell: UICollectionViewCell)
 }
 
 
@@ -59,7 +61,6 @@ class DownloadCell: BaseCell {
         let bt = UIButton()
         bt.setTitle("", for: .normal)
         bt.setImage(UIImage(named: "round_play_arrow_black_48")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        bt.isUserInteractionEnabled = false
         return bt
     }()
     
@@ -222,6 +223,14 @@ class DownloadCell: BaseCell {
     }
     
     func configure(track: Track, downloaded: Bool, download: Download?, isEditTapped: Bool = false) {
+        
+        let coreDataItem = track.dbRecord
+        if coreDataItem.did_fail_with_error {
+            self.refreshButton.isHidden = false
+        } else {
+            self.refreshButton.isHidden = true
+        }
+        
         titleLabel.text = track.name
         
         /// If it's active download
@@ -269,10 +278,89 @@ class DownloadCell: BaseCell {
             pauseButton.isHidden = true
             progressLabel.isHidden = false
         }
-        self.downloadButton.isHidden = true
-        self.progressView2.isHidden = true
+        
         removeButton.isHidden = !isEditTapped
         self.layoutIfNeeded()
+    }
+    
+    public func configure(hlsObject: HLSObject) {
+        
+        /// Set general properties
+        self.titleLabel.text = hlsObject.name
+        self.durationLabel.text = "длительность видео"
+        
+        /// Set thumbnail
+        self.configureThumbnailImage(thumbnailUrl: hlsObject.thumbnailUrl)
+        
+        /// Not downloaded yet
+        if hlsObject.state == .notDownloaded {
+            configureCellForNotDownloadedState(hlsObject: hlsObject)
+        }
+        /// Downloading state
+        else if hlsObject.state == .downloading {
+            configureCellForDownloadingState(hlsObject: hlsObject)
+        }
+        /// Paused state
+        else if hlsObject.state == .paused {
+            configureCellForPausedState(hlsObject: hlsObject)
+        }
+        /// Downloaded  state
+        else if hlsObject.state == .downloaded {
+            configureCellForDownloadedState(hlsObject: hlsObject)
+        }
+    }
+    
+    private func configureThumbnailImage(thumbnailUrl: URL?) {
+        guard let url = thumbnailUrl else {return}
+        coverImage.sd_imageIndicator = SDWebImageActivityIndicator.gray
+        coverImage.sd_setImage(with: url) { (image, error, cache, urls) in
+            if error != nil {
+                /// Load image fail with error
+                print("Job failed: \(error!.localizedDescription)")
+            } else {
+                /// Load image success
+            }
+        }
+    }
+    
+    private func configureCellForNotDownloadedState(hlsObject: HLSObject) {
+        print("\(#fileID) => \(#function)")
+        self.downloadButton.enableButton()
+        self.pauseButton.disableButton()
+        self.resumeButton.disableButton()
+        self.removeButton.disableButton()
+        self.refreshButton.disableButton()
+        self.progressLabel.text = "Загрузка не началось"
+    }
+    
+    private func configureCellForPausedState(hlsObject: HLSObject) {
+        print("\(#fileID) => \(#function)")
+        self.downloadButton.disableButton()
+        self.pauseButton.disableButton()
+        self.resumeButton.enableButton()
+        self.removeButton.disableButton()
+        self.refreshButton.disableButton()
+        self.progressLabel.text = "Приостановлено"
+    }
+    
+    private func configureCellForDownloadingState(hlsObject: HLSObject) {
+        print("\(#fileID) => \(#function)")
+        self.downloadButton.disableButton()
+        self.pauseButton.enableButton()
+        self.resumeButton.disableButton()
+        self.removeButton.disableButton()
+        self.refreshButton.disableButton()
+        self.progressLabel.text = "Скачивается ..."
+    }
+    
+    private func configureCellForDownloadedState(hlsObject: HLSObject) {
+        print("\(#fileID) => \(#function)")
+        self.downloadButton.disableButton()
+        self.pauseButton.disableButton()
+        self.resumeButton.disableButton()
+        self.removeButton.disableButton()
+        self.refreshButton.disableButton()
+        self.progressLabel.text = "Скачано"
     }
     
     
@@ -296,5 +384,6 @@ extension DownloadCell {
     @objc
     private func refreshButtonTapped(_ sender: UIButton?) {
         print("\(#fileID) => \(#function)")
+        self.editDelegate?.refreshButtonTapped(on: self)
     }
 }

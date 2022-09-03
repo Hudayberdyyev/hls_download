@@ -26,6 +26,9 @@
 		B588AF7D28BE1CF200D2266B /* Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF7C28BE1CF200D2266B /* Download.swift */; };
 		B588AF7F28BE1D1A00D2266B /* DBServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF7E28BE1D1A00D2266B /* DBServices.swift */; };
 		B588AF8128BE30A500D2266B /* InputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588AF8028BE30A500D2266B /* InputViewController.swift */; };
+		B58A605F28C33395006BA4AE /* HLSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58A605E28C33395006BA4AE /* HLSObject.swift */; };
+		B58A606128C33458006BA4AE /* AssetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58A606028C33458006BA4AE /* AssetStore.swift */; };
+		B58A606328C37600006BA4AE /* UIButtonExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58A606228C37600006BA4AE /* UIButtonExt.swift */; };
 		B5A3278F28C228AE00EA3E09 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A3278E28C228AE00EA3E09 /* SessionManager.swift */; };
 		C989B46BDE6E62AED29D7252 /* Pods_download_asset.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAC8D5029FF00366A7CFE722 /* Pods_download_asset.framework */; };
 /* End PBXBuildFile section */
@@ -54,6 +57,9 @@
 		B588AF7C28BE1CF200D2266B /* Download.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Download.swift; sourceTree = "<group>"; };
 		B588AF7E28BE1D1A00D2266B /* DBServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBServices.swift; sourceTree = "<group>"; };
 		B588AF8028BE30A500D2266B /* InputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputViewController.swift; sourceTree = "<group>"; };
+		B58A605E28C33395006BA4AE /* HLSObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HLSObject.swift; sourceTree = "<group>"; };
+		B58A606028C33458006BA4AE /* AssetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetStore.swift; sourceTree = "<group>"; };
+		B58A606228C37600006BA4AE /* UIButtonExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonExt.swift; sourceTree = "<group>"; };
 		B5A3278E28C228AE00EA3E09 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		DAC8D5029FF00366A7CFE722 /* Pods_download_asset.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_download_asset.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -185,6 +191,7 @@
 			children = (
 				B588AF7628BE192600D2266B /* UIImageExt.swift */,
 				B588AF7828BE1B1400D2266B /* UIViewExt.swift */,
+				B58A606228C37600006BA4AE /* UIButtonExt.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -193,6 +200,8 @@
 			isa = PBXGroup;
 			children = (
 				B5A3278E28C228AE00EA3E09 /* SessionManager.swift */,
+				B58A605E28C33395006BA4AE /* HLSObject.swift */,
+				B58A606028C33458006BA4AE /* AssetStore.swift */,
 			);
 			path = DownloadManager;
 			sourceTree = "<group>";
@@ -312,15 +321,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B58A605F28C33395006BA4AE /* HLSObject.swift in Sources */,
 				B588AF7928BE1B1400D2266B /* UIViewExt.swift in Sources */,
 				B588AF7F28BE1D1A00D2266B /* DBServices.swift in Sources */,
 				B57F3ADD28AA273B00EA64F9 /* ViewController.swift in Sources */,
 				B588AF8128BE30A500D2266B /* InputViewController.swift in Sources */,
 				B588AF6928BE01CD00D2266B /* KinoExtensions.swift in Sources */,
+				B58A606128C33458006BA4AE /* AssetStore.swift in Sources */,
 				B57F3AD928AA273B00EA64F9 /* AppDelegate.swift in Sources */,
 				B588AF6228BDFB5000D2266B /* Belet_Films.xcdatamodeld in Sources */,
 				B588AF7D28BE1CF200D2266B /* Download.swift in Sources */,
 				B588AF6D28BE032F00D2266B /* BaseCell.swift in Sources */,
+				B58A606328C37600006BA4AE /* UIButtonExt.swift in Sources */,
 				B57F3ADB28AA273B00EA64F9 /* SceneDelegate.swift in Sources */,
 				B588AF6B28BE02F300D2266B /* DownloadCell.swift in Sources */,
 				B588AF7028BE03ED00D2266B /* FontSizes.swift in Sources */,
