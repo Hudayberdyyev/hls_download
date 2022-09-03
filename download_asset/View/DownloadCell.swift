@@ -11,23 +11,17 @@ import UICircularProgressRing
 import SnapKit
 import SDWebImage
 
-protocol TrackCellDelegate {
-    func downloadTapped(_ cell: DownloadCell)
-    func pauseTapped(_ cell: DownloadCell)
-    func resumeTapped(_ cell: DownloadCell)
-    func deleteKinoTapped(_ cell: DownloadCell)
+protocol DownloadCellDelegate {
+    func downloadButtonTapped(_ cell: DownloadCell)
+    func pauseButtonTapped(_ cell: DownloadCell)
+    func resumeButtonTapped(_ cell: DownloadCell)
+    func forwardOrRemoveButtonTapped(_ cell: DownloadCell)
+    func refreshButtonTapped(_ cell: DownloadCell)
 }
-
-protocol EditDownloadsDelegate {
-    func forwardOrEditButtonTapped(on baseCell: UICollectionViewCell)
-    func refreshButtonTapped(on baseCell: UICollectionViewCell)
-}
-
 
 class DownloadCell: BaseCell {
     
-    var delegate: TrackCellDelegate?
-    var editDelegate: EditDownloadsDelegate?
+    var delegate: DownloadCellDelegate?
     
     let titleLabel:UILabel = {
         let label = UILabel()
@@ -147,10 +141,8 @@ class DownloadCell: BaseCell {
         self.contentView.addSubview(pauseButton)
         self.contentView.addSubview(resumeButton)
         self.contentView.addSubview(refreshButton)
+        self.contentView.addSubview(removeButton)
         
-//        coverImage.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: nil, padding: .init(top: 8, left: 12, bottom: 4, right: 12))
-        
-//        let coverImageHeightConstant: CGFloat = self.frame.height - 12.0
         coverImage.snp.makeConstraints { (make) in
             make.top.equalTo(self).offset(8)
             make.bottom.equalTo(self).offset(-4)
@@ -176,110 +168,22 @@ class DownloadCell: BaseCell {
         
         progressView2.shouldShowValueText = false
         
-        downloadButton.addTarget(self, action: #selector(downloadBasdy(button:)), for: .touchUpInside)
-        pauseButton.addTarget(self, action: #selector(pauseBasdy(button:)), for: .touchUpInside)
+        downloadButton.addTarget(self, action: #selector(downloadButtonTapped(button:)), for: .touchUpInside)
+        pauseButton.addTarget(self, action: #selector(pauseButtonTapped(button:)), for: .touchUpInside)
+        resumeButton.addTarget(self, action: #selector(resumeButtonTapped(button:)), for: .touchUpInside)
+        refreshButton.addTarget(self, action: #selector(refreshButtonTapped(_:)), for: .touchUpInside)
         
-        resumeButton.addTarget(self, action: #selector(resumeBasdy(button:)), for: .touchUpInside)
         
-        self.contentView.addSubview(removeButton)
         removeButton.snp.makeConstraints { (make) in
             make.height.width.equalTo(40)
             make.center.equalTo(progressView2)
         }
-        removeButton.isHidden = true
 
         refreshButton.snp.makeConstraints { make in
             make.height.width.equalTo(40)
             make.center.equalTo(progressView2)
         }
-        refreshButton.isHidden = false
-        refreshButton.addTarget(self, action: #selector(refreshButtonTapped(_:)), for: .touchUpInside)
-    }
-    
-    @objc func downloadBasdy(button:UIButton){
-        print("\(#fileID) => \(#function)")
-        delegate?.downloadTapped(self)
-        self.downloadButton.isHidden = true
-        self.pauseButton.isHidden = false
-        self.resumeButton.isHidden = true
-    }
-    
-    @objc func resumeBasdy(button:UIButton){
-        print("\(#fileID) => \(#function)")
-        self.resumeButton.isHidden = true
-        self.pauseButton.isHidden = false
-        self.downloadButton.isHidden = true
-        delegate?.resumeTapped(self)
-
-    }
-    
-    @objc func pauseBasdy(button:UIButton){
-        print("\(#fileID) => \(#function)")
-        self.pauseButton.isHidden = true
-        self.resumeButton.isHidden = false
-        self.downloadButton.isHidden = true
-        delegate?.pauseTapped(self)
-    }
-    
-    func configure(track: Track, downloaded: Bool, download: Download?, isEditTapped: Bool = false) {
         
-        let coreDataItem = track.dbRecord
-        if coreDataItem.did_fail_with_error {
-            self.refreshButton.isHidden = false
-        } else {
-            self.refreshButton.isHidden = true
-        }
-        
-        titleLabel.text = track.name
-        
-        /// If it's active download
-        if let download = download {
-            
-            progressLabel.text = download.isDownloading ? "Загружается..." : "Приостановлен"
-            
-            if (download.isDownloading) {
-                resumeButton.isHidden = true
-                downloadButton.isHidden = true
-                pauseButton.isHidden = false
-            } else {
-                resumeButton.isHidden = false
-                pauseButton.isHidden = true
-                downloadButton.isHidden = true
-            }
-            
-            progressLabel.isHidden = false
-            
-            let durationLen = track.dbRecord.duration?.count ?? 0
-            if (durationLen > 5){
-                durationLabel.text = "\(track.dbRecord.duration ?? " ")"
-            } else {
-                durationLabel.text = "\(track.dbRecord.duration ?? " ") мин"
-            }
-            progressView2.isHidden = false
-            
-        }
-         
-        /// If it's downloaded
-        if (downloaded){
-            progressLabel.text = "Скачано"
-            
-            let durationLen = track.dbRecord.duration?.count ?? 0
-            
-            if (durationLen > 5) {
-                durationLabel.text = "\(track.dbRecord.duration ?? " ")"
-            } else {
-                durationLabel.text = "\(track.dbRecord.duration ?? " ") мин"
-            }
-            
-            progressView2.isHidden = true
-            downloadButton.isHidden = true
-            resumeButton.isHidden = true
-            pauseButton.isHidden = true
-            progressLabel.isHidden = false
-        }
-        
-        removeButton.isHidden = !isEditTapped
-        self.layoutIfNeeded()
     }
     
     public func configure(
@@ -394,12 +298,37 @@ extension DownloadCell {
     @objc
     private func removeButtonTapped(_ sender: UIButton?) {
         print("\(#fileID) => \(#function)")
-        self.editDelegate?.forwardOrEditButtonTapped(on: self)
+        self.delegate?.forwardOrRemoveButtonTapped(self)
     }
     
     @objc
     private func refreshButtonTapped(_ sender: UIButton?) {
         print("\(#fileID) => \(#function)")
-        self.editDelegate?.refreshButtonTapped(on: self)
+        self.delegate?.refreshButtonTapped(self)
     }
+    
+    @objc
+    func downloadButtonTapped(button: UIButton){
+        print("\(#fileID) => \(#function)")
+        delegate?.downloadButtonTapped(self)
+        self.downloadButton.disableButton()
+        self.pauseButton.enableButton()
+    }
+    
+    @objc
+    func resumeButtonTapped(button: UIButton){
+        print("\(#fileID) => \(#function)")
+        delegate?.resumeButtonTapped(self)
+        self.resumeButton.disableButton()
+        self.pauseButton.enableButton()
+    }
+    
+    @objc
+    func pauseButtonTapped(button: UIButton){
+        print("\(#fileID) => \(#function)")
+        delegate?.pauseButtonTapped(self)
+        self.pauseButton.disableButton()
+        self.resumeButton.enableButton()
+    }
+    
 }

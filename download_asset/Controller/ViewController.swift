@@ -117,7 +117,6 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
         let hlsObject = self.downloadsList[indexPath.row]
         cell.configure(hlsObject: hlsObject, isEditTapped: self.isEditTapped)
         cell.delegate = self
-        cell.editDelegate = self
         
         return cell
     }
@@ -181,25 +180,25 @@ extension ViewController {
 }
 
 //MARK: - TrackCell delegate, EditDownloads delegate methods
-extension ViewController: TrackCellDelegate, EditDownloadsDelegate {
-    
-    func downloadTapped(_ cell: DownloadCell) {
+extension ViewController: DownloadCellDelegate {
+    func forwardOrRemoveButtonTapped(_ cell: DownloadCell) {
         print("\(#fileID) => \(#function)")
     }
     
-    func pauseTapped(_ cell: DownloadCell) {
+    func refreshButtonTapped(_ cell: DownloadCell) {
         print("\(#fileID) => \(#function)")
     }
     
-    func resumeTapped(_ cell: DownloadCell) {
+    
+    func downloadButtonTapped(_ cell: DownloadCell) {
         print("\(#fileID) => \(#function)")
     }
     
-    func deleteKinoTapped(_ cell: DownloadCell) {
+    func pauseButtonTapped(_ cell: DownloadCell) {
         print("\(#fileID) => \(#function)")
     }
     
-    func forwardOrEditButtonTapped(on baseCell: UICollectionViewCell) {
+    func resumeButtonTapped(_ cell: DownloadCell) {
         print("\(#fileID) => \(#function)")
     }
     
@@ -209,7 +208,6 @@ extension ViewController: TrackCellDelegate, EditDownloadsDelegate {
            let indexPath = filmsCollectionView.indexPath(for: cell)
         {
             let index = indexPath.row
-            
         }
     }
 }
