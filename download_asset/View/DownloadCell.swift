@@ -12,11 +12,11 @@ import SnapKit
 import SDWebImage
 
 protocol DownloadCellDelegate {
-    func downloadButtonTapped(_ cell: DownloadCell)
-    func pauseButtonTapped(_ cell: DownloadCell)
-    func resumeButtonTapped(_ cell: DownloadCell)
-    func forwardOrRemoveButtonTapped(_ cell: DownloadCell)
-    func refreshButtonTapped(_ cell: DownloadCell)
+    func downloadButtonTapped(_ cell: UICollectionViewCell)
+    func pauseButtonTapped(_ cell: UICollectionViewCell)
+    func resumeButtonTapped(_ cell: UICollectionViewCell)
+    func forwardOrRemoveButtonTapped(_ cell: UICollectionViewCell)
+    func refreshButtonTapped(_ cell: UICollectionViewCell)
 }
 
 class DownloadCell: BaseCell {
@@ -236,6 +236,7 @@ class DownloadCell: BaseCell {
     }
     
     private func configureCellForEditMode() {
+        print("\(#fileID) => \(#function)")
         self.downloadButton.disableButton()
         self.resumeButton.disableButton()
         self.pauseButton.disableButton()
@@ -280,6 +281,7 @@ class DownloadCell: BaseCell {
         self.resumeButton.disableButton()
         self.removeButton.disableButton()
         self.refreshButton.disableButton()
+        self.progressView2.isHidden = true
         self.progressLabel.text = "Скачано"
     }
     
@@ -290,6 +292,13 @@ class DownloadCell: BaseCell {
         let prc = (CGFloat(progress) * 100)
         progressView2.minValue = 0
         progressView2.value = CGFloat(prc)
+    }
+    
+    func updateDisplay(with percentComplete: Double) {
+        progressLabel.text = String(format: "%.1f%%", percentComplete * 100)
+        progressView2.minValue = 0
+        progressView2.maxValue = 100
+        progressView2.value = CGFloat(percentComplete * 100)
     }
 }
 
@@ -305,6 +314,8 @@ extension DownloadCell {
     private func refreshButtonTapped(_ sender: UIButton?) {
         print("\(#fileID) => \(#function)")
         self.delegate?.refreshButtonTapped(self)
+        self.refreshButton.disableButton()
+        self.resumeButton.enableButton()
     }
     
     @objc

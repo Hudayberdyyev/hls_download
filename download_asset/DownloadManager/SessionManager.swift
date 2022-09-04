@@ -9,19 +9,23 @@ import Foundation
 import AVFoundation
 
 protocol SessionManagerDelegate {
-    func updateProgress(for downloadItem: Download, with progress: Double, total size: Int64)
-    func downloadFinishedSuccessfully(streamUrl url: URL, for downloadItem: Download, with location: URL)
-    func downloadFailWithError(for downloadItem: Download)
-    func notAvailableSpace(for downloadItem: Download)
+//    func updateProgress(for downloadItem: Download, with progress: Double, total size: Int64)
+//    func downloadFinishedSuccessfully(streamUrl url: URL, for downloadItem: Download, with location: URL)
+//    func downloadFailWithError(for downloadItem: Download)
+//    func notAvailableSpace(for downloadItem: Download)
+    
+    func updateProgress(for hlsObj: HLSObject, with progress: Double)
+    func downloadComplete(for hlsObj: HLSObject)
 }
 
 final internal class SessionManager: NSObject {
     //MARK: - Properties
     
     static let shared = SessionManager()
-
+    public var sessionManagerDelegate: SessionManagerDelegate?
     internal let homeDirectoryURL = URL(fileURLWithPath: NSHomeDirectory())
     private var session: AVAssetDownloadURLSession!
+    internal var downloadingMap = [AVAssetDownloadTask: HLSObject]()
     
     //MARK: - Initialization
     override private init() {
@@ -43,12 +47,58 @@ final internal class SessionManager: NSObject {
     private func restoreDownloadsMap() {
         print("\(#fileID) => \(#function)")
     }
+    
+    func downloadStream(_ hlsObject: HLSObject) {
+        guard let task = session.makeAssetDownloadTask(
+            asset: hlsObject.urlAsset,
+            assetTitle: hlsObject.name,
+            assetArtworkData: nil,
+            options: [
+                AVAssetDownloadTaskMinimumRequiredMediaBitrateKey: 0
+            ]
+        ) else {
+            return
+        }
+                
+        task.taskDescription = hlsObject.name
+        downloadingMap[task] = hlsObject
+        task.resume()
+    }
+    
+    func cancelDownload(_ hlsObject: HLSObject) {
+        downloadingMap.first(where: { $1 == hlsObject })?.key.cancel()
+    }
+    
+    func resumeDownload(_ hlsObject: HLSObject) {
+        guard let task = session.makeAssetDownloadTask(
+            asset: hlsObject.getResumeDownloadLink(),
+            assetTitle: hlsObject.name,
+            assetArtworkData: nil,
+            options: [
+                AVAssetDownloadTaskMinimumRequiredMediaBitrateKey: 0
+            ]
+        ) else {
+            print("resume download failed")
+            return
+        }
+        
+        print("resume download success")
+        task.taskDescription = hlsObject.name
+        downloadingMap[task] = hlsObject
+        task.resume()
+    }
 }
 
 extension SessionManager: AVAssetDownloadDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        print("\(#fileID) => \(#function) => \((task as! AVAssetDownloadTask).urlAsset.url.absoluteString)")
         guard error != nil else {
             /// Download task is complete
+            if let assetDownloadTask = task as? AVAssetDownloadTask,
+               downloadingMap[assetDownloadTask] != nil {
+                downloadingMap[assetDownloadTask]!.state = .downloaded
+                sessionManagerDelegate?.downloadComplete(for: downloadingMap[assetDownloadTask]!)
+            }
             return
         }
         
@@ -56,15 +106,24 @@ extension SessionManager: AVAssetDownloadDelegate {
     }
     
     func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask, didFinishDownloadingTo location: URL) {
+        print("\(#fileID) => \(#function) => \(assetDownloadTask.urlAsset.url.absoluteString)")
         /// Save the destination url
-        /// location.relativePath - path for saving partially downloaded data
+        guard let hlsObj = downloadingMap[assetDownloadTask] else {
+            return
+        }
+        hlsObj.localUrl = location
+        DBServices.sharedInstance.changeLocalPathKinoByStreamUrl(withUrl: hlsObj.urlAsset.url.absoluteString, to: location.absoluteString)
     }
     
     func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask, didLoad timeRange: CMTimeRange, totalTimeRangesLoaded loadedTimeRanges: [NSValue], timeRangeExpectedToLoad: CMTimeRange) {
+        print("\(#fileID) => \(#function) => \(assetDownloadTask.urlAsset.url.absoluteString)")
+        guard let hlsObj = downloadingMap[assetDownloadTask] else { return }
         /// Monitor progress
-//        guard let hlsion = downloadingMap[assetDownloadTask] else { return }
-//        hlsion.result = nil
-//        guard let progressClosure = hlsion.progressClosure else { return }
+        let percentComplete = loadedTimeRanges.reduce(0.0) {
+            let loadedTimeRange : CMTimeRange = $1.timeRangeValue
+            return $0 + CMTimeGetSeconds(loadedTimeRange.duration) / CMTimeGetSeconds(timeRangeExpectedToLoad.duration)
+        }
         
+        sessionManagerDelegate?.updateProgress(for: hlsObj, with: percentComplete)
     }
 }

@@ -50,6 +50,8 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        /// Set as session manager delegate
+        SessionManager.shared.sessionManagerDelegate = self
         self.setupEditButtonOnNavigationBar()
         self.loadDownloadsFromDB()
     }
@@ -181,33 +183,45 @@ extension ViewController {
 
 //MARK: - TrackCell delegate, EditDownloads delegate methods
 extension ViewController: DownloadCellDelegate {
-    func forwardOrRemoveButtonTapped(_ cell: DownloadCell) {
+    func forwardOrRemoveButtonTapped(_ cell: UICollectionViewCell) {
         print("\(#fileID) => \(#function)")
     }
     
-    func refreshButtonTapped(_ cell: DownloadCell) {
+    func refreshButtonTapped(_ cell: UICollectionViewCell) {
         print("\(#fileID) => \(#function)")
     }
     
     
-    func downloadButtonTapped(_ cell: DownloadCell) {
+    func downloadButtonTapped(_ cell: UICollectionViewCell) {
         print("\(#fileID) => \(#function)")
-    }
-    
-    func pauseButtonTapped(_ cell: DownloadCell) {
-        print("\(#fileID) => \(#function)")
-    }
-    
-    func resumeButtonTapped(_ cell: DownloadCell) {
-        print("\(#fileID) => \(#function)")
-    }
-    
-    func refreshButtonTapped(on baseCell: UICollectionViewCell) {
-        print("\(#fileID) => \(#function)")
-        if let cell = baseCell as? DownloadCell,
-           let indexPath = filmsCollectionView.indexPath(for: cell)
+        if let downloadCell = cell as? DownloadCell,
+           let indexPath = filmsCollectionView.indexPath(for: downloadCell),
+           indexPath.row < self.downloadsList.count
         {
-            let index = indexPath.row
+            let hlsObj = self.downloadsList[indexPath.row]
+            hlsObj.startDownload()
+        }
+    }
+    
+    func pauseButtonTapped(_ cell: UICollectionViewCell) {
+        print("\(#fileID) => \(#function)")
+        if let downloadCell = cell as? DownloadCell,
+           let indexPath = filmsCollectionView.indexPath(for: downloadCell),
+           indexPath.row < self.downloadsList.count
+        {
+            let hlsObj = self.downloadsList[indexPath.row]
+            hlsObj.cancelDownload()
+        }
+    }
+    
+    func resumeButtonTapped(_ cell: UICollectionViewCell) {
+        print("\(#fileID) => \(#function)")
+        if let downloadCell = cell as? DownloadCell,
+           let indexPath = filmsCollectionView.indexPath(for: downloadCell),
+           indexPath.row < self.downloadsList.count
+        {
+            let hlsObj = self.downloadsList[indexPath.row]
+            hlsObj.resumeDownload()
         }
     }
 }
@@ -231,5 +245,31 @@ extension ViewController {
         }
         
         self.filmsCollectionView.reloadData()
+    }
+}
+
+extension ViewController: SessionManagerDelegate {
+    func updateProgress(for hlsObj: HLSObject, with progress: Double) {
+        let optIndex = self.downloadsList.firstIndex { downloadItem in
+            hlsObj.urlAsset == downloadItem.urlAsset
+        }
+        
+        guard let index = optIndex else {return}
+        
+        if let downloadCell = self.filmsCollectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? DownloadCell {
+            downloadCell.updateDisplay(with: progress)
+        }
+    }
+    
+    func downloadComplete(for hlsObj: HLSObject) {
+        let optIndex = self.downloadsList.firstIndex { downloadItem in
+            hlsObj.urlAsset == downloadItem.urlAsset
+        }
+        
+        guard let index = optIndex else {return}
+        
+        if let downloadCell = self.filmsCollectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? DownloadCell {
+            downloadCell.configure(hlsObject: hlsObj)
+        }
     }
 }
