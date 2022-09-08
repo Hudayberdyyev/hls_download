@@ -14,7 +14,6 @@ extension OSLog {
     /// Categories
     static let viewCycleCategory = "viewCycle"
     static let downloadsCategory = "downloads"
-    static let didEnterForegroundCategory = "didEnterForeground"
     /// Subsystems
     static let downloadsSubsystem = "downloads"
     
@@ -24,7 +23,4 @@ extension OSLog {
     
     /// Logs the downloads
     static let downloads = OSLog(subsystem: subsystem, category: OSLog.downloadsCategory)
-    
-    /// Logs of the didEnterForeground
-    static let didEnterForeground = OSLog(subsystem: subsystem, category: OSLog.didEnterForegroundCategory)
 }

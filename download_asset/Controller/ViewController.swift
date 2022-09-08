@@ -40,6 +40,11 @@ class ViewController: UIViewController {
     }()
     
     private func forTestingPurposes() {
+//        let downloadsList = DBServices.sharedInstance.getKino()
+//        os_log("%@ => %@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function, String(downloadsList.count))
+//        for kino in downloadsList {
+//            DBServices.sharedInstance.changeLocalPathKinoById(with: kino.id, to: "")
+//        }
     }
     
     //MARK: - View methods
@@ -51,7 +56,6 @@ class ViewController: UIViewController {
         self.setupInitialConfigurations()
         self.setupViews()
         self.setupGestureRecognizers()
-//        self.setupDidEnterForegroundNotification()
         
     }
     
@@ -62,22 +66,6 @@ class ViewController: UIViewController {
         SessionManager.shared.sessionManagerDelegate = self
         self.setupEditButtonOnNavigationBar()
         self.loadDownloadsFromDB()
-    }
-    
-    private func setupDidEnterForegroundNotification() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(didEnterForeground),
-//            name: UIApplication.didBecomeActiveNotification,
-            name: UIApplication.willEnterForegroundNotification,
-            object: nil
-        )
-    }
-    
-    @objc
-    private func didEnterForeground() {
-        os_log("%@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function)
-        SessionManager.shared.restoreDownloadsMap()
     }
     
     private func setupEditButtonOnNavigationBar() {
@@ -184,7 +172,7 @@ extension ViewController {
                 }
                 
                 continue
-            }
+            } 
             /// Thumbnail url,  Movie id, Stream url, Movie name
             
             let headers: [String: String] = [
@@ -197,7 +185,7 @@ extension ViewController {
 //                hlsObject.localUrl = URL(string: localPath)
 //            }
             self.downloadsList.append(hlsObject)
-            
+            os_log("%@ => %@ => %@ downloading state is %@", log: OSLog.downloads, type: .info, #fileID, #function, kino.k_name ?? "", String(kino.downloading_state))
             index += 1
         }
         

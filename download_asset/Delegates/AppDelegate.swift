@@ -16,6 +16,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        os_log("%@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function)
+        
+//        SessionManager.shared.restoreDownloadTasksFromCoreData()
         
         if #available(iOS 13.0, *) {
             /// Scene delegate handle it
@@ -31,11 +34,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         os_log("%@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function)
-        SessionManager.shared.restoreDownloadsMap()
+//        SessionManager.shared.restoreDownloadsMap()
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        print("\(#fileID) => \(#function)")
+        os_log("%@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function)
         self.saveContext()
     }
 
