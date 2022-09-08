@@ -54,16 +54,19 @@ public class HLSObject {
     
     /// Start Download
     public func startDownload() {
+        self.state = .downloading
         SessionManager.shared.downloadStream(self)
     }
     
     /// Cancel download
     public func cancelDownload() {
+        self.state = .paused
         SessionManager.shared.cancelDownload(self)
     }
     
     /// Resume download
     public func resumeDownload() {
+        self.state = .downloading
         SessionManager.shared.resumeDownload(self)
     }
     
@@ -88,7 +91,7 @@ public class HLSObject {
 extension HLSObject: Equatable {}
 
 public func == (lhs: HLSObject, rhs: HLSObject) -> Bool {
-    return (lhs.name == rhs.name) && (lhs.urlAsset == rhs.urlAsset)
+    return (lhs.name == rhs.name) && (lhs.movieId == rhs.movieId)
 }
 
 extension HLSObject: CustomStringConvertible {
@@ -96,3 +99,4 @@ extension HLSObject: CustomStringConvertible {
         return "\(name), \(urlAsset.url)"
     }
 }
+

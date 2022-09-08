@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import SDWebImage
+import os.log
 
 class ViewController: UIViewController {
     
@@ -38,13 +39,20 @@ class ViewController: UIViewController {
         return b
     }()
     
+    private func forTestingPurposes() {
+    }
+    
     //MARK: - View methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        os_log("%@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function)
         // Do any additional setup after loading the view.
+        forTestingPurposes()
         self.setupInitialConfigurations()
         self.setupViews()
         self.setupGestureRecognizers()
+//        self.setupDidEnterForegroundNotification()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -54,6 +62,22 @@ class ViewController: UIViewController {
         SessionManager.shared.sessionManagerDelegate = self
         self.setupEditButtonOnNavigationBar()
         self.loadDownloadsFromDB()
+    }
+    
+    private func setupDidEnterForegroundNotification() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didEnterForeground),
+//            name: UIApplication.didBecomeActiveNotification,
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+    }
+    
+    @objc
+    private func didEnterForeground() {
+        os_log("%@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function)
+        SessionManager.shared.restoreDownloadsMap()
     }
     
     private func setupEditButtonOnNavigationBar() {
@@ -69,7 +93,6 @@ class ViewController: UIViewController {
     }
     
     private func setupInitialConfigurations() {
-        print("\(#fileID) => \(#function)")
         /// Set background as black
         self.view.backgroundColor = .black
         
@@ -128,7 +151,6 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("\(#fileID) => \(#function)")
     }
 }
 
@@ -170,6 +192,10 @@ extension ViewController {
             ]
             let hlsObject = HLSObject(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": headers], name: kino.k_name ?? "", state: kino.downloadingState, thumbnailUrl: URL(string: kino.cover_url ?? ""), movieId: Int(kino.id))
             
+            /// If we have valid local path for download then set localUrl
+//            if let localPath = kino.local_path {
+//                hlsObject.localUrl = URL(string: localPath)
+//            }
             self.downloadsList.append(hlsObject)
             
             index += 1
@@ -251,7 +277,7 @@ extension ViewController {
 extension ViewController: SessionManagerDelegate {
     func updateProgress(for hlsObj: HLSObject, with progress: Double) {
         let optIndex = self.downloadsList.firstIndex { downloadItem in
-            hlsObj.urlAsset == downloadItem.urlAsset
+            hlsObj.movieId == downloadItem.movieId
         }
         
         guard let index = optIndex else {return}
@@ -263,13 +289,14 @@ extension ViewController: SessionManagerDelegate {
     
     func downloadComplete(for hlsObj: HLSObject) {
         let optIndex = self.downloadsList.firstIndex { downloadItem in
-            hlsObj.urlAsset == downloadItem.urlAsset
+            hlsObj.movieId == downloadItem.movieId
         }
-        
+
         guard let index = optIndex else {return}
+        self.downloadsList[index] = hlsObj
         
         if let downloadCell = self.filmsCollectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? DownloadCell {
-            downloadCell.configure(hlsObject: hlsObj)
+            downloadCell.configure(hlsObject: self.downloadsList[index])
         }
     }
 }

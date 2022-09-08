@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreData
+import os.log
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -26,6 +27,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         return true
+    }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        os_log("%@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function)
+        SessionManager.shared.restoreDownloadsMap()
     }
     
     func applicationWillTerminate(_ application: UIApplication) {

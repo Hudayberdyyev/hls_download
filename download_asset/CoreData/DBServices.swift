@@ -113,6 +113,35 @@ extension DBServices {
         }
     }
     
+    public func changeLocalPathKinoById(with id: Int32, to path: String) {
+        let request: NSFetchRequest<Kino> = Kino.fetchRequest()
+        
+        request.predicate = NSPredicate(format: "id == %@", "\(id)")
+        
+        var itemArray: [Kino] = []
+        
+        do {
+            /// Fetch request
+            itemArray = try DBServices.context.fetch(request)
+            
+            /// Try setting as downloaded item
+            for item in itemArray {
+                item.local_path = path
+            }
+            
+            /// Try saving
+            do {
+                try DBServices.context.save()
+            } catch {
+                print(error.localizedDescription)
+                return
+            }
+            
+        } catch {
+            print("Error with reading from coredata \(error)")
+        }
+    }
+    
     public func changeLocalPathKinoByStreamUrl(withUrl url: String, to path: String) {
         print("\(#fileID) => \(#function)")
         let request: NSFetchRequest<Kino> = Kino.fetchRequest()

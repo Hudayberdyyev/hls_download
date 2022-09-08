@@ -236,7 +236,6 @@ class DownloadCell: BaseCell {
     }
     
     private func configureCellForEditMode() {
-        print("\(#fileID) => \(#function)")
         self.downloadButton.disableButton()
         self.resumeButton.disableButton()
         self.pauseButton.disableButton()
@@ -245,7 +244,6 @@ class DownloadCell: BaseCell {
     }
     
     private func configureCellForNotDownloadedState(hlsObject: HLSObject) {
-        print("\(#fileID) => \(#function)")
         self.downloadButton.enableButton()
         self.pauseButton.disableButton()
         self.resumeButton.disableButton()
@@ -255,7 +253,6 @@ class DownloadCell: BaseCell {
     }
     
     private func configureCellForPausedState(hlsObject: HLSObject) {
-        print("\(#fileID) => \(#function)")
         self.downloadButton.disableButton()
         self.pauseButton.disableButton()
         self.resumeButton.enableButton()
@@ -265,7 +262,6 @@ class DownloadCell: BaseCell {
     }
     
     private func configureCellForDownloadingState(hlsObject: HLSObject) {
-        print("\(#fileID) => \(#function)")
         self.downloadButton.disableButton()
         self.pauseButton.enableButton()
         self.resumeButton.disableButton()
@@ -275,7 +271,6 @@ class DownloadCell: BaseCell {
     }
     
     private func configureCellForDownloadedState(hlsObject: HLSObject) {
-        print("\(#fileID) => \(#function)")
         self.downloadButton.disableButton()
         self.pauseButton.disableButton()
         self.resumeButton.disableButton()
@@ -295,10 +290,12 @@ class DownloadCell: BaseCell {
     }
     
     func updateDisplay(with percentComplete: Double) {
-        progressLabel.text = String(format: "%.1f%%", percentComplete * 100)
-        progressView2.minValue = 0
-        progressView2.maxValue = 100
-        progressView2.value = CGFloat(percentComplete * 100)
+        DispatchQueue.main.async {
+            self.progressLabel.text = String(format: "%.1f%%", percentComplete * 100)
+            self.progressView2.minValue = 0
+            self.progressView2.maxValue = 100
+            self.progressView2.value = CGFloat(percentComplete * 100)
+        }
     }
 }
 
