@@ -7,6 +7,7 @@
 
 import CoreData
 import UIKit
+import os.log
 
 class DBServices: NSObject {
     static let sharedInstance = DBServices()
@@ -139,6 +140,70 @@ extension DBServices {
             
         } catch {
             print("Error with reading from coredata \(error)")
+        }
+    }
+    
+    public func changeDownloadingStateAndProgressByMovieId(withID id: Int32, toState downloadingState: DownloadingState, toProgress progress: Double?) {
+        os_log("%@ => %@ => %@", log: OSLog.coreData, type: .info, #fileID, #function, String(id))
+        let request: NSFetchRequest<Kino> = Kino.fetchRequest()
+        
+        request.predicate = NSPredicate(format: "id == %@", "\(id)")
+        
+        var itemArray: [Kino] = []
+        
+        do {
+            /// Fetch request
+            itemArray = try DBServices.context.fetch(request)
+            
+            /// Try setting as downloaded item
+            for item in itemArray {
+                item.downloadingState = downloadingState
+                if let safeProgress = progress {
+                    item.progress = safeProgress
+                }
+            }
+            
+            /// Try saving
+            do {
+                try DBServices.context.save()
+            } catch {
+                print(error.localizedDescription)
+                return
+            }
+            
+        } catch {
+            os_log("%@ => %@ => %@", log: OSLog.coreData, type: .info, #fileID, #function, error.localizedDescription)
+        }
+    }
+    
+    public func changeLocalPathAndProgressByMovieID(with movieId: Int32, location path: String, progress: Double) {
+        os_log("%@ => %@ => %@", log: OSLog.coreData, type: .info, #fileID, #function, String(movieId))
+        let request: NSFetchRequest<Kino> = Kino.fetchRequest()
+        
+        request.predicate = NSPredicate(format: "id == %@", "\(movieId)")
+        
+        var itemArray: [Kino] = []
+        
+        do {
+            /// Fetch request
+            itemArray = try DBServices.context.fetch(request)
+            
+            /// Try setting as downloaded item
+            for item in itemArray {
+                item.local_path = path
+                item.progress = progress
+            }
+            
+            /// Try saving
+            do {
+                try DBServices.context.save()
+            } catch {
+                print(error.localizedDescription)
+                return
+            }
+            
+        } catch {
+            os_log("%@ => %@ => %@", log: OSLog.coreData, type: .info, #fileID, #function, error.localizedDescription)
         }
     }
     

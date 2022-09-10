@@ -176,8 +176,15 @@ extension ViewController {
             let headers: [String: String] = [
                 "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjk3fQ.c3Hnysn5_aB8YLnzty-5eXEcZVLYz0Aj5lz6-wslX8g"
             ]
-            let hlsObject = HLSObject(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": headers], name: kino.k_name ?? "", state: kino.downloadingState, thumbnailUrl: URL(string: kino.cover_url ?? ""), movieId: Int(kino.id))
-            
+            let hlsObject = HLSObject(
+                url: url,
+                options: ["AVURLAssetHTTPHeaderFieldsKey": headers],
+                name: kino.k_name ?? "",
+                state: kino.downloadingState,
+                thumbnailUrl: URL(string: kino.cover_url ?? ""),
+                movieId: Int(kino.id),
+                progress: kino.progress
+            )
             /// If we have valid local path for download then set localUrl
 //            if let localPath = kino.local_path {
 //                hlsObject.localUrl = URL(string: localPath)

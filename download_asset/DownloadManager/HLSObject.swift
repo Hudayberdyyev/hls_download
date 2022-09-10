@@ -26,19 +26,22 @@ public class HLSObject {
     /// Thumbnail url
     public var thumbnailUrl: URL?
     public var movieId: Int
+    public var progress: Double?
     
     internal init(
         asset: AVURLAsset,
         description: String,
         state: DownloadingState,
         thumbnailUrl: URL?,
-        movieId: Int
+        movieId: Int,
+        progress: Double?
     ) {
         self.name = description
         self.urlAsset = asset
         self.state = state
         self.thumbnailUrl = thumbnailUrl
         self.movieId = movieId
+        self.progress = progress
     }
     
     /// Initialize HLSObject
@@ -47,9 +50,24 @@ public class HLSObject {
     ///   - url: HLS(m3u8) URL.
     ///   - options: AVURLAsset options.
     ///   - name: Identifier name.
-    public convenience init(url: URL, options: [String: Any]? = nil, name: String, state: DownloadingState, thumbnailUrl: URL?, movieId: Int) {
+    public convenience init(
+        url: URL,
+        options: [String: Any]? = nil,
+        name: String,
+        state: DownloadingState,
+        thumbnailUrl: URL?,
+        movieId: Int,
+        progress: Double?
+    ) {
         let urlAsset = AVURLAsset(url: url, options: options)
-        self.init(asset: urlAsset, description: name, state: state, thumbnailUrl: thumbnailUrl, movieId: movieId)
+        self.init(
+            asset: urlAsset,
+            description: name,
+            state: state,
+            thumbnailUrl: thumbnailUrl,
+            movieId: movieId,
+            progress: progress
+        )
     }
     
     /// Start Download

@@ -256,7 +256,16 @@ class DownloadCell: BaseCell {
         self.resumeButton.enableButton()
         self.removeButton.disableButton()
         self.refreshButton.disableButton()
+        
+        /// Set progress label
         self.progressLabel.text = "Приостановлено"
+        
+        /// Configure progress view
+        if let percentComplete = hlsObject.progress {
+            self.progressView2.minValue = 0
+            self.progressView2.maxValue = 100
+            self.progressView2.value = CGFloat(percentComplete * 100)
+        }
     }
     
     private func configureCellForDownloadingState(hlsObject: HLSObject) {

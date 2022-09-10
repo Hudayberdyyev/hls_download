@@ -12,12 +12,13 @@
         <attribute name="k_name" optional="YES" attributeType="String"/>
         <attribute name="last_watch_time" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="local_path" optional="YES" attributeType="String"/>
+        <attribute name="progress" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="season_index" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="size" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="state" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="url" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="Kino" positionX="-63" positionY="-18" width="128" height="254"/>
+        <element name="Kino" positionX="-63" positionY="-18" width="128" height="269"/>
     </elements>
 </model>

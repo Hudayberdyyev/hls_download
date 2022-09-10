@@ -70,15 +70,18 @@ final internal class SessionManager: NSObject {
     }
     
     func cancelDownload(_ hlsObject: HLSObject) {
-//        DBServices.sharedInstance.changeDownloadingStateKinoByID(withID: Int32(hlsObject.movieId), to: .paused)
+        /// Safely retrieve asset download task
         if let assetDownloadTask = downloadingMap.first(where: { $1 == hlsObject })?.key {
-            os_log("%@ => %@ => downloading map count before deleting = %@", log: OSLog.viewCycle, type: .info, #fileID, #function, String(downloadingMap.count))
+            
+            /// Cancel download task
             assetDownloadTask.cancel()
+            
+            /// Remove download task from downloading map
             downloadingMap.removeValue(forKey: assetDownloadTask)
-            os_log("%@ => %@ => downloading map count after deleting = %@", log: OSLog.viewCycle, type: .info, #fileID, #function, String(downloadingMap.count))
+            
+            /// Change downloading state to core data
+            DBServices.sharedInstance.changeDownloadingStateAndProgressByMovieId(withID: Int32(hlsObject.movieId), toState: .paused, toProgress: hlsObject.progress)
         }
-        
-//        downloadingMap.first(where: { $1 == hlsObject })?.key.cancel()
     }
     
     func resumeDownload(_ hlsObject: HLSObject) {
@@ -176,6 +179,8 @@ extension SessionManager: AVAssetDownloadDelegate {
     
     func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask, didLoad timeRange: CMTimeRange, totalTimeRangesLoaded loadedTimeRanges: [NSValue], timeRangeExpectedToLoad: CMTimeRange) {
         os_log("%@ => %@ => %@", log: OSLog.downloadsViewCycle, type: .info, #fileID, #function, assetDownloadTask.taskDescription ?? "unknown movie id")
+        
+        /// Save retrieve hls object
         guard let hlsObj = downloadingMap[assetDownloadTask] else { return }
         
         /// Monitor progress
@@ -184,6 +189,10 @@ extension SessionManager: AVAssetDownloadDelegate {
             return $0 + CMTimeGetSeconds(loadedTimeRange.duration) / CMTimeGetSeconds(timeRangeExpectedToLoad.duration)
         }
         
+        /// Change hls object progress property
+        hlsObj.progress = percentComplete
+        
+        /// Notify session manager delegate
         sessionManagerDelegate?.updateProgress(for: hlsObj, with: percentComplete)
     }
 }
@@ -235,7 +244,8 @@ extension SessionManager {
                     name: downloadItem.k_name ?? "",
                     state: downloadItem.downloadingState,
                     thumbnailUrl: URL(string: downloadItem.cover_url ?? ""),
-                    movieId: Int(downloadItem.id)
+                    movieId: Int(downloadItem.id),
+                    progress: downloadItem.progress
                 )
                 
                 /// If local path is exists then reset HLS object local url property
@@ -283,7 +293,8 @@ extension SessionManager {
                 name: kino.k_name ?? "",
                 state: kino.downloadingState,
                 thumbnailUrl: URL(string: kino.cover_url ?? ""),
-                movieId: Int(kino.id)
+                movieId: Int(kino.id),
+                progress: kino.progress
             )
             hlsObject.localUrl = URL(string: kino.local_path ?? "")
             

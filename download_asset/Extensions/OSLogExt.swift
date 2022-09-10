@@ -14,6 +14,7 @@ extension OSLog {
     /// Categories
     static let viewCycleCategory = "viewCycle"
     static let downloadsCategory = "downloads"
+    static let coreDataCategory = "coreData"
     /// Subsystems
     static let downloadsSubsystem = "downloads"
     
@@ -23,4 +24,7 @@ extension OSLog {
     
     /// Logs the downloads
     static let downloads = OSLog(subsystem: subsystem, category: OSLog.downloadsCategory)
+    
+    /// Logs the core data
+    static let coreData = OSLog(subsystem: subsystem, category: OSLog.coreDataCategory)
 }
