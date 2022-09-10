@@ -35,6 +35,12 @@ final internal class SessionManager: NSObject {
         initializeSession()
     }
     
+    public func downloadTasksCount() {
+        session.getAllTasks { tasks in
+            os_log("%@ => %@ => active tasks = %@", log: OSLog.viewCycle, type: .info, #fileID, #function, String(tasks.count))
+        }
+    }
+    
     private func initializeSession() {
         os_log("%@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function)
         let configuration = URLSessionConfiguration.background(withIdentifier: "tm.film.belet.bgSessionAsset")
@@ -65,7 +71,14 @@ final internal class SessionManager: NSObject {
     
     func cancelDownload(_ hlsObject: HLSObject) {
 //        DBServices.sharedInstance.changeDownloadingStateKinoByID(withID: Int32(hlsObject.movieId), to: .paused)
-        downloadingMap.first(where: { $1 == hlsObject })?.key.cancel()
+        if let assetDownloadTask = downloadingMap.first(where: { $1 == hlsObject })?.key {
+            os_log("%@ => %@ => downloading map count before deleting = %@", log: OSLog.viewCycle, type: .info, #fileID, #function, String(downloadingMap.count))
+            assetDownloadTask.cancel()
+            downloadingMap.removeValue(forKey: assetDownloadTask)
+            os_log("%@ => %@ => downloading map count after deleting = %@", log: OSLog.viewCycle, type: .info, #fileID, #function, String(downloadingMap.count))
+        }
+        
+//        downloadingMap.first(where: { $1 == hlsObject })?.key.cancel()
     }
     
     func resumeDownload(_ hlsObject: HLSObject) {
@@ -188,6 +201,7 @@ extension SessionManager {
                 }
             }
         }
+        
     }
     
     public func restoreDownloadTasksFromCoreData() {
@@ -289,6 +303,7 @@ extension SessionManager {
         
         /// cancel all active tasks
         self.session.getAllTasks { tasks in
+            os_log("%@ => %@ => %@", log: OSLog.downloads, type: .info, #fileID, #function, String(tasks.count))
             for task in tasks {
                 if let assetDownloadTask = task as? AVAssetDownloadTask {
                     
@@ -296,7 +311,6 @@ extension SessionManager {
                     /// add download task to cancelled download array
                     self.cancelledDownloadTasks.append(assetDownloadTask)
                     assetDownloadTask.cancel()
-                    
                 }
             }
         }

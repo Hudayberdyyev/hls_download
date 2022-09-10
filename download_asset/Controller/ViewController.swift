@@ -56,7 +56,6 @@ class ViewController: UIViewController {
         self.setupInitialConfigurations()
         self.setupViews()
         self.setupGestureRecognizers()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -105,7 +104,6 @@ class ViewController: UIViewController {
             make.leading.trailing.top.equalTo(view)
             make.bottom.equalTo(createDownloadItemButton.snp.top).offset(-10)
         }
-        
     }
     
     private func setupGestureRecognizers() {
@@ -207,7 +205,7 @@ extension ViewController: DownloadCellDelegate {
     
     
     func downloadButtonTapped(_ cell: UICollectionViewCell) {
-        print("\(#fileID) => \(#function)")
+        os_log("%@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function)
         if let downloadCell = cell as? DownloadCell,
            let indexPath = filmsCollectionView.indexPath(for: downloadCell),
            indexPath.row < self.downloadsList.count
@@ -218,7 +216,7 @@ extension ViewController: DownloadCellDelegate {
     }
     
     func pauseButtonTapped(_ cell: UICollectionViewCell) {
-        print("\(#fileID) => \(#function)")
+        os_log("%@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function)
         if let downloadCell = cell as? DownloadCell,
            let indexPath = filmsCollectionView.indexPath(for: downloadCell),
            indexPath.row < self.downloadsList.count
@@ -229,7 +227,7 @@ extension ViewController: DownloadCellDelegate {
     }
     
     func resumeButtonTapped(_ cell: UICollectionViewCell) {
-        print("\(#fileID) => \(#function)")
+        os_log("%@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function)
         if let downloadCell = cell as? DownloadCell,
            let indexPath = filmsCollectionView.indexPath(for: downloadCell),
            indexPath.row < self.downloadsList.count

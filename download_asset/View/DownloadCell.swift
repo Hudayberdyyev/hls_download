@@ -162,8 +162,6 @@ class DownloadCell: BaseCell {
         resumeButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 0, left: 0, bottom: 0, right: 0), size: .init(width: 20, height: 20))
         pauseButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 0, left: 0, bottom: 0, right: 0), size: .init(width: 20, height: 20))
         
-        
-        
         progressView2.anchor(top: topAnchor, leading: nil, bottom: nil, trailing: trailingAnchor, padding: .init(top: 18, left: 0, bottom: 0, right: 18), size: .init(width: 40, height: 40))
         
         progressView2.shouldShowValueText = false

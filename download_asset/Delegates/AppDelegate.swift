@@ -19,6 +19,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         os_log("%@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function)
         
 //        SessionManager.shared.restoreDownloadTasksFromCoreData()
+//        SessionManager.shared.downloadTasksCount()
+//        SessionManager.shared.restoreDownloadsMap()
         
         if #available(iOS 13.0, *) {
             /// Scene delegate handle it
@@ -34,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         os_log("%@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function)
-//        SessionManager.shared.restoreDownloadsMap()
+        SessionManager.shared.restoreDownloadsMap()
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
