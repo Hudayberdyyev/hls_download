@@ -18,6 +18,7 @@ protocol SessionManagerDelegate {
     
     func updateProgress(for hlsObj: HLSObject, with progress: Double)
     func downloadComplete(for hlsObj: HLSObject)
+    func locationCaptured(forMovie id: Int, to location: String)
 }
 
 final internal class SessionManager: NSObject {
@@ -135,6 +136,8 @@ extension SessionManager: AVAssetDownloadDelegate {
     func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask, didFinishDownloadingTo location: URL) {
         os_log("%@ => %@ => %@", log: OSLog.downloadsViewCycle, type: .info, #fileID, #function, assetDownloadTask.taskDescription ?? "unknown movie id")
         
+        let localPath: String = location.relativePath
+        
         /// If it's cancelled download task
         if cancelledDownloadTasks.count > 0 {
             /// Set the index as not founded
@@ -143,15 +146,15 @@ extension SessionManager: AVAssetDownloadDelegate {
             /// Iterate through cancelled tasks
             for i in 0...cancelledDownloadTasks.count-1 {
                 /// If we found the element we are looking for, then save index
-                if cancelledDownloadTasks[i] == assetDownloadTask { index = i}
+                if cancelledDownloadTasks[i] == assetDownloadTask { index = i }
             }
             
             /// If the element you are looking for was found then remove it
             if index != -1 { cancelledDownloadTasks.remove(at: index) }
             
             /// Save the local path on core data
-            let movieId = Int32(assetDownloadTask.taskDescription ?? "0") ?? 0
-            DBServices.sharedInstance.changeLocalPathKinoById(with: movieId, to: location.absoluteString)
+            let movieId = Int(assetDownloadTask.taskDescription ?? "0") ?? 0
+            DBServices.sharedInstance.changeLocalPathKinoById(with: movieId, to: localPath)
             
             /// If cancelled tasks is empty then restore all download tasks again
             if self.cancelledDownloadTasks.count == 0 {
@@ -164,9 +167,10 @@ extension SessionManager: AVAssetDownloadDelegate {
         
         /// Save local path for movie id
         if let movieIdStr = assetDownloadTask.taskDescription,
-           let movieId = Int32(movieIdStr) {
+           let movieId = Int(movieIdStr) {
             os_log("%@ => %@ => local path changed", log: OSLog.viewCycle, type: .info, #fileID, #function)
-            DBServices.sharedInstance.changeLocalPathKinoById(with: movieId, to: location.absoluteString)
+            DBServices.sharedInstance.changeLocalPathKinoById(with: movieId, to: localPath)
+            sessionManagerDelegate?.locationCaptured(forMovie: movieId, to: localPath)
         }
         
 //        /// Save the destination url
@@ -250,7 +254,7 @@ extension SessionManager {
                 
                 /// If local path is exists then reset HLS object local url property
                 if downloadItem.local_path != nil {
-                    hlsObject.localUrl = URL(string: downloadItem.local_path!)
+                    hlsObject.localUrl = downloadItem.local_path
                 }
                 
                 hlsObject.resumeDownload()
@@ -296,7 +300,7 @@ extension SessionManager {
                 movieId: Int(kino.id),
                 progress: kino.progress
             )
-            hlsObject.localUrl = URL(string: kino.local_path ?? "")
+            hlsObject.localUrl = kino.local_path ?? ""
             
             /// if current state is downloading then resume download
             let localUrl = kino.local_path ?? ""

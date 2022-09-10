@@ -114,7 +114,7 @@ extension DBServices {
         }
     }
     
-    public func changeLocalPathKinoById(with id: Int32, to path: String) {
+    public func changeLocalPathKinoById(with id: Int, to path: String) {
         let request: NSFetchRequest<Kino> = Kino.fetchRequest()
         
         request.predicate = NSPredicate(format: "id == %@", "\(id)")

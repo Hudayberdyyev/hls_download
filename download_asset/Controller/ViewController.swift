@@ -186,9 +186,9 @@ extension ViewController {
                 progress: kino.progress
             )
             /// If we have valid local path for download then set localUrl
-//            if let localPath = kino.local_path {
-//                hlsObject.localUrl = URL(string: localPath)
-//            }
+            if let localPath = kino.local_path {
+                hlsObject.localUrl = localPath
+            }
             self.downloadsList.append(hlsObject)
             os_log("%@ => %@ => %@ downloading state is %@", log: OSLog.downloads, type: .info, #fileID, #function, kino.k_name ?? "", String(kino.downloading_state))
             index += 1
@@ -291,5 +291,16 @@ extension ViewController: SessionManagerDelegate {
         if let downloadCell = self.filmsCollectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? DownloadCell {
             downloadCell.configure(hlsObject: self.downloadsList[index])
         }
+    }
+    
+    func locationCaptured(forMovie id: Int, to location: String) {
+        os_log("%@ => %@ => %@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function, String(id), location)
+        let optIndex = self.downloadsList.firstIndex { hlsObj in
+            hlsObj.movieId == id
+        }
+        
+        guard let index = optIndex else {return}
+        
+        self.downloadsList[index].localUrl = location
     }
 }
