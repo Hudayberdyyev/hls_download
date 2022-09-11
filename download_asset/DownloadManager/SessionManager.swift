@@ -38,10 +38,15 @@ final internal class SessionManager: NSObject {
         initializeSession()
     }
     
-    public func downloadTasksCount() {
-        session.getAllTasks { tasks in
-            os_log("%@ => %@ => active tasks = %@", log: OSLog.viewCycle, type: .info, #fileID, #function, String(tasks.count))
+    public func getDownloadTaskIndex(_ hlsObject: HLSObject) -> Int {
+        var currentIndex = 0
+        for downloadMapItem in downloadingMap {
+            if downloadMapItem.value == hlsObject {
+                return currentIndex
+            }
+            currentIndex += 1
         }
+        return -1
     }
     
     private func initializeSession() {
@@ -68,7 +73,7 @@ final internal class SessionManager: NSObject {
             return
         }
         
-//        DBServices.sharedInstance.changeDownloadingStateKinoByID(withID: Int32(hlsObject.movieId), to: .downloading)
+        DBServices.sharedInstance.changeDownloadingStateKinoByID(withID: Int32(hlsObject.movieId), to: .downloading)
         task.taskDescription = String(hlsObject.movieId)
         downloadingMap[task] = hlsObject
         task.resume()
@@ -103,7 +108,7 @@ final internal class SessionManager: NSObject {
             return
         }
         os_log("%@ => %@ => %@ => success", log: OSLog.downloads, type: .debug, #fileID, #function, String(hlsObject.movieId))
-//        DBServices.sharedInstance.changeDownloadingStateKinoByID(withID: Int32(hlsObject.movieId), to: .downloading)
+        DBServices.sharedInstance.changeDownloadingStateKinoByID(withID: Int32(hlsObject.movieId), to: .downloading)
         assetDownloadTask.taskDescription = String(hlsObject.movieId)
         downloadingMap[assetDownloadTask] = hlsObject
         assetDownloadTask.resume()
@@ -120,17 +125,23 @@ extension SessionManager: AVAssetDownloadDelegate {
         guard error != nil else {
             /// Download task is complete
             if let assetDownloadTask = task as? AVAssetDownloadTask,
-               downloadingMap[assetDownloadTask] != nil {
-                /// Change downloading map state
-//                downloadingMap[assetDownloadTask]!.state = .downloaded
+               let taskDescription = assetDownloadTask.taskDescription,
+               let movieId = Int(taskDescription),
+               let kino = DBServices.sharedInstance.getKinoByID(id: movieId)
+            {
+                let hlsObj = HLSObject(kino: kino)
+                
+                /// Change hls object download state
+                hlsObj.state = .downloaded
                 
                 /// Notify delegate about download completed
-                downloadingMap[assetDownloadTask]?.state = .downloaded
-                sessionManagerDelegate?.downloadComplete(for: downloadingMap[assetDownloadTask]!)
+                sessionManagerDelegate?.downloadComplete(for: hlsObj)
+                downloadingMap.removeValue(forKey: assetDownloadTask)
                 
                 /// Change downloading state in core data
-//                DBServices.sharedInstance.changeDownloadingStateKinoByID(withID: Int32(downloadingMap[assetDownloadTask]!.movieId), to: .downloaded)
-                os_log("download task is complete", log: OSLog.downloads, type: .debug)
+                DBServices.sharedInstance.changeDownloadingStateKinoByID(withID: Int32(hlsObj.movieId), to: .downloaded)
+                
+                os_log("Download complete => %@", log: OSLog.downloads, type: .debug, String(hlsObj.movieId))
             }
             return
         }
@@ -191,13 +202,6 @@ extension SessionManager: AVAssetDownloadDelegate {
             DBServices.sharedInstance.changeLocalPathKinoById(with: movieId, to: localPath)
             sessionManagerDelegate?.locationCaptured(forMovie: movieId, to: localPath)
         }
-        
-//        /// Save the destination url
-//        guard let hlsObj = downloadingMap[assetDownloadTask] else {
-//            return
-//        }
-//        hlsObj.localUrl = location
-//        DBServices.sharedInstance.changeLocalPathKinoByStreamUrl(withUrl: hlsObj.urlAsset.url.absoluteString, to: location.absoluteString)
     }
     
     func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask, didLoad timeRange: CMTimeRange, totalTimeRangesLoaded loadedTimeRanges: [NSValue], timeRangeExpectedToLoad: CMTimeRange) {
@@ -293,40 +297,14 @@ extension SessionManager {
         let downloadsList = DBServices.sharedInstance.getKino()
         
         for kino in downloadsList {
-            /// Safe retrieve url
-            guard let url = URL(string: kino.url ?? "") else {
-                /// If url isn't valid then remove it from core data
-                let movieId = kino.id
-                DBServices.sharedInstance.deleteKinoFromDB(id: Int(movieId)) { isOk in
-                    if isOk {
-                        os_log("movie with id = %@ successfully removed ", log: OSLog.downloads, type: .debug, movieId)
-                    } else {
-                        os_log("movie with id = %@ remove fail with error", log: OSLog.downloads, type: .debug, movieId)
-                    }
-                }
-                
+            let hlsObject = HLSObject(kino: kino)
+            
+            if hlsObject.urlAsset == nil {
+                DBServices.sharedInstance.deleteKinoFromDB(id: hlsObject.movieId) { isOk in }
                 continue
             }
-            /// initialize headers
-            let headers: [String: String] = [
-                "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjk3fQ.c3Hnysn5_aB8YLnzty-5eXEcZVLYz0Aj5lz6-wslX8g"
-            ]
-            /// initialize hls object
-            let hlsObject = HLSObject(
-                url: url,
-                options: ["AVURLAssetHTTPHeaderFieldsKey": headers],
-                name: kino.k_name ?? "",
-                state: kino.downloadingState,
-                thumbnailUrl: URL(string: kino.cover_url ?? ""),
-                movieId: Int(kino.id),
-                progress: kino.progress
-            )
-            hlsObject.localUrl = kino.local_path ?? ""
             
-            /// if current state is downloading then resume download
-            let localUrl = kino.local_path ?? ""
-            
-            if kino.downloadingState == .notDownloaded && localUrl.count > 5 {
+            if kino.downloadingState == .downloading {
                 hlsObject.resumeDownload()
             }
         }
@@ -342,16 +320,15 @@ extension SessionManager {
             os_log("%@ => %@ => %@", log: OSLog.downloads, type: .info, #fileID, #function, String(tasks.count))
             for task in tasks {
                 if let assetDownloadTask = task as? AVAssetDownloadTask {
-                    
-                    /// cancel asset download task
-                    /// add download task to cancelled download array
+                    /// Cancel asset download task
+                    /// Add download task to cancelled download array
                     self.cancelledDownloadTasks.append(assetDownloadTask)
                     assetDownloadTask.cancel()
                 }
             }
         }
         
-        /// empty downloading map array
+        /// Empty downloading map array
         self.downloadingMap = [:]
     }
 }

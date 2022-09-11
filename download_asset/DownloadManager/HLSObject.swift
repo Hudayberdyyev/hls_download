@@ -146,7 +146,7 @@ public class HLSObject {
 extension HLSObject: Equatable {}
 
 public func == (lhs: HLSObject, rhs: HLSObject) -> Bool {
-    return (lhs.name == rhs.name) && (lhs.movieId == rhs.movieId)
+    return (lhs.movieId == rhs.movieId)
 }
 
 extension HLSObject: CustomStringConvertible {

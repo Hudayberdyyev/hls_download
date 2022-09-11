@@ -41,11 +41,20 @@ class ViewController: UIViewController {
     
     private func forTestingPurposes() {
 //        os_log("%@ => %@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function, String(downloadsList.count))
-//        let downloadsList = DBServices.sharedInstance.getKino()
-//        for kino in downloadsList {
+        let downloadsList = DBServices.sharedInstance.getKino()
+        for kino in downloadsList {
 //            DBServices.sharedInstance.changeDownloadingStateKinoByID(withID: kino.id, to: .notDownloaded)
 //            DBServices.sharedInstance.changeLocalPathKinoById(with: Int(kino.id), to: "")
-//        }
+            
+            /// Check to existing of download
+//            let hlsObject = HLSObject(kino: kino)
+//            let index = SessionManager.shared.getDownloadTaskIndex(hlsObject)
+//            if index > -1 {
+//                print("\(kino.id) => \(index)")
+//            } else {
+//                print("\(kino.id) => doesn't exists")
+//            }
+        }
     }
     
     //MARK: - View methods

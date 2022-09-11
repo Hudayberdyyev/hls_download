@@ -212,8 +212,6 @@ class DownloadCell: BaseCell {
         else if hlsObject.state == .downloaded {
             configureCellForDownloadedState(hlsObject: hlsObject)
         }
-        
-        
         /// Edit mode enabled
         if isEditTapped {
             configureCellForEditMode()
