@@ -242,12 +242,12 @@ class DownloadCell: BaseCell {
     }
     
     private func configureCellForNotDownloadedState(hlsObject: HLSObject) {
-        self.downloadButton.enableButton()
+        self.downloadButton.disableButton()
         self.pauseButton.disableButton()
         self.resumeButton.disableButton()
         self.removeButton.disableButton()
-        self.refreshButton.disableButton()
-        self.progressLabel.text = "Загрузка не началось"
+        self.refreshButton.enableButton()
+        self.progressLabel.text = "Произошла ошибка"
     }
     
     private func configureCellForPausedState(hlsObject: HLSObject) {
@@ -319,7 +319,9 @@ extension DownloadCell {
         print("\(#fileID) => \(#function)")
         self.delegate?.refreshButtonTapped(self)
         self.refreshButton.disableButton()
-        self.resumeButton.enableButton()
+        self.resumeButton.disableButton()
+        self.pauseButton.enableButton()
+        self.progressLabel.text = "Ожидание ответа от сервера ... "
     }
     
     @objc
@@ -328,6 +330,7 @@ extension DownloadCell {
         delegate?.downloadButtonTapped(self)
         self.downloadButton.disableButton()
         self.pauseButton.enableButton()
+        self.progressLabel.text = "Ожидание ответа от сервера ... "
     }
     
     @objc
@@ -336,6 +339,7 @@ extension DownloadCell {
         delegate?.resumeButtonTapped(self)
         self.resumeButton.disableButton()
         self.pauseButton.enableButton()
+        self.progressLabel.text = "Ожидание ответа от сервера ... "
     }
     
     @objc
@@ -344,6 +348,7 @@ extension DownloadCell {
         delegate?.pauseButtonTapped(self)
         self.pauseButton.disableButton()
         self.resumeButton.enableButton()
+        self.progressLabel.text = "Загрузка приостановлено"
     }
     
 }

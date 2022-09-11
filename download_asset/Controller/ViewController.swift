@@ -40,10 +40,11 @@ class ViewController: UIViewController {
     }()
     
     private func forTestingPurposes() {
-//        let downloadsList = DBServices.sharedInstance.getKino()
 //        os_log("%@ => %@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function, String(downloadsList.count))
+//        let downloadsList = DBServices.sharedInstance.getKino()
 //        for kino in downloadsList {
-//            DBServices.sharedInstance.changeLocalPathKinoById(with: kino.id, to: "")
+//            DBServices.sharedInstance.changeDownloadingStateKinoByID(withID: kino.id, to: .notDownloaded)
+//            DBServices.sharedInstance.changeLocalPathKinoById(with: Int(kino.id), to: "")
 //        }
     }
     
@@ -158,43 +159,21 @@ extension ViewController {
         
         var index = 0
         for kino in self.downloadsCoreData {
-            guard let url = URL(string: kino.url ?? "") else {
-                /// Remove it from core data
-                let movieId = kino.id
-                DBServices.sharedInstance.deleteKinoFromDB(id: Int(movieId)) { isOk in
-                    if isOk {
-                        print("movie with id = \(movieId) successfully removed")
-                    } else {
-                        print("movie with id = \(movieId) remove fail with error")
-                    }
-                }
-                
-                continue
-            } 
-            /// Thumbnail url,  Movie id, Stream url, Movie name
+            /// Initialize hls object
+            let hlsObject = HLSObject(kino: kino)
             
-            let headers: [String: String] = [
-                "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjk3fQ.c3Hnysn5_aB8YLnzty-5eXEcZVLYz0Aj5lz6-wslX8g"
-            ]
-            let hlsObject = HLSObject(
-                url: url,
-                options: ["AVURLAssetHTTPHeaderFieldsKey": headers],
-                name: kino.k_name ?? "",
-                state: kino.downloadingState,
-                thumbnailUrl: URL(string: kino.cover_url ?? ""),
-                movieId: Int(kino.id),
-                progress: kino.progress
-            )
-            /// If we have valid local path for download then set localUrl
-            if let localPath = kino.local_path {
-                hlsObject.localUrl = localPath
+            /// Check if it has valid download url, else remove it and just skip there
+            if hlsObject.urlAsset == nil {
+                DBServices.sharedInstance.deleteKinoFromDB(id: Int(kino.id)) { isOk in }
+                continue
             }
+            
+            /// It's valid download, append it to download list
             self.downloadsList.append(hlsObject)
-            os_log("%@ => %@ => %@ downloading state is %@", log: OSLog.downloads, type: .info, #fileID, #function, kino.k_name ?? "", String(kino.downloading_state))
+            
+            /// Increment index
             index += 1
         }
-        
-        print("count of downloading films = \(self.downloadsList.count)")
         
         self.filmsCollectionView.reloadData()
     }
@@ -207,7 +186,14 @@ extension ViewController: DownloadCellDelegate {
     }
     
     func refreshButtonTapped(_ cell: UICollectionViewCell) {
-        print("\(#fileID) => \(#function)")
+        os_log("%@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function)
+        if let downloadCell = cell as? DownloadCell,
+           let indexPath = filmsCollectionView.indexPath(for: downloadCell),
+           indexPath.row < self.downloadsList.count
+        {
+            let hlsObj = self.downloadsList[indexPath.row]
+            hlsObj.resumeDownload()
+        }
     }
     
     
@@ -302,5 +288,30 @@ extension ViewController: SessionManagerDelegate {
         guard let index = optIndex else {return}
         
         self.downloadsList[index].localUrl = location
+    }
+    
+    func updateView(for movieId: Int32) {
+        os_log("%@ => %@ => %@", log: OSLog.viewCycle, type: .info, #fileID, #function, String(movieId))
+        
+        /// Retrieve last updates from core data
+        let kino = DBServices.sharedInstance.getKinoByID(id: Int(movieId))
+        
+        /// Initialize optional index
+        let optIndex = self.downloadsList.firstIndex { hlsObj in
+            hlsObj.movieId == movieId
+        }
+        
+        /// Safe retrieve index, and kino object
+        guard let index = optIndex,
+              let safeKino = kino
+        else { return }
+        
+        /// Reset download list item
+        self.downloadsList[index] = HLSObject(kino: safeKino)
+        
+        /// Re-confiugre corresponding cell
+        if let downloadCell = self.filmsCollectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? DownloadCell {
+            downloadCell.configure(hlsObject: self.downloadsList[index])
+        }
     }
 }

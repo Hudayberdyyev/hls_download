@@ -18,7 +18,7 @@ public class HLSObject {
     /// Identifier name
     public let name: String
     /// Target AVURLAsset that have HLS URL.
-    public let urlAsset: AVURLAsset
+    public let urlAsset: AVURLAsset?
     /// Local url path that saved for offline playback. return nil if not downloaded
     public var localUrl: String?
     /// Downloading state
@@ -29,12 +29,13 @@ public class HLSObject {
     public var progress: Double?
     
     internal init(
-        asset: AVURLAsset,
+        asset: AVURLAsset?,
         description: String,
         state: DownloadingState,
         thumbnailUrl: URL?,
         movieId: Int,
-        progress: Double?
+        progress: Double?,
+        localUrl: String? = nil
     ) {
         self.name = description
         self.urlAsset = asset
@@ -42,14 +43,10 @@ public class HLSObject {
         self.thumbnailUrl = thumbnailUrl
         self.movieId = movieId
         self.progress = progress
+        self.localUrl = localUrl
     }
     
     /// Initialize HLSObject
-    ///
-    /// - Parameters:
-    ///   - url: HLS(m3u8) URL.
-    ///   - options: AVURLAsset options.
-    ///   - name: Identifier name.
     public convenience init(
         url: URL,
         options: [String: Any]? = nil,
@@ -67,6 +64,34 @@ public class HLSObject {
             thumbnailUrl: thumbnailUrl,
             movieId: movieId,
             progress: progress
+        )
+    }
+    
+    /// Initialize HLSObject
+    public convenience init(
+        kino: Kino
+    ) {
+        var urlAsset: AVURLAsset?
+        /// Initialize url asset
+        if let url = URL(string: kino.url ?? "") {
+            urlAsset = HLSObject.makeUrlAssetWithCredentials(url: url)
+        }
+        
+        var localUrl: String?
+        /// Check it's valid file path
+        if kino.local_path?.count ?? 0 > 6 {
+            localUrl = kino.local_path
+        }
+        
+        /// Call internal initializer
+        self.init(
+            asset: urlAsset,
+            description: kino.k_name ?? "",
+            state: kino.downloadingState,
+            thumbnailUrl: URL(string: kino.cover_url ?? ""),
+            movieId: Int(kino.id),
+            progress: kino.progress,
+            localUrl: localUrl
         )
     }
     
@@ -88,7 +113,7 @@ public class HLSObject {
         SessionManager.shared.resumeDownload(self)
     }
     
-    private func makeUrlAssetWithCredentials(url: URL) -> AVURLAsset {
+    static func makeUrlAssetWithCredentials(url: URL) -> AVURLAsset {
         /// Retrieve valid token
         let headers: [String: String] = [
             "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjk3fQ.c3Hnysn5_aB8YLnzty-5eXEcZVLYz0Aj5lz6-wslX8g"
@@ -101,17 +126,20 @@ public class HLSObject {
     }
     
     /// Get resume download link
-    public func getResumeDownloadLink() -> AVURLAsset {
+    public func getResumeDownloadLink() -> AVURLAsset? {
         
         /// Safe retrieve local url, else return urlAsset
         guard let localUrl = self.localUrl,
               let urlEncodedLocalUrl = localUrl.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
               let absoluteLocalURL = URL(string: urlEncodedLocalUrl, relativeTo: SessionManager.shared.homeDirectoryURL)
         else {
-            return self.makeUrlAssetWithCredentials(url: self.urlAsset.url)
+            if let url = self.urlAsset?.url {
+                return HLSObject.makeUrlAssetWithCredentials(url: url)
+            }
+            return nil
         }
         /// Return url asset with credentials
-        return self.makeUrlAssetWithCredentials(url: absoluteLocalURL)
+        return HLSObject.makeUrlAssetWithCredentials(url: absoluteLocalURL)
     }
 }
 
@@ -123,7 +151,7 @@ public func == (lhs: HLSObject, rhs: HLSObject) -> Bool {
 
 extension HLSObject: CustomStringConvertible {
     public var description: String {
-        return "\(name), \(urlAsset.url)"
+        return "\(name), \(movieId)"
     }
 }
 

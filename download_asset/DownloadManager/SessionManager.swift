@@ -19,6 +19,7 @@ protocol SessionManagerDelegate {
     func updateProgress(for hlsObj: HLSObject, with progress: Double)
     func downloadComplete(for hlsObj: HLSObject)
     func locationCaptured(forMovie id: Int, to location: String)
+    func updateView(for movieId: Int32)
 }
 
 final internal class SessionManager: NSObject {
@@ -29,6 +30,7 @@ final internal class SessionManager: NSObject {
     private var session: AVAssetDownloadURLSession!
     internal var downloadingMap = [AVAssetDownloadTask: HLSObject]()
     private var cancelledDownloadTasks: [AVAssetDownloadTask] = []
+    private let cancelled = "cancelled"
     
     //MARK: - Initialization
     override private init() {
@@ -53,8 +55,10 @@ final internal class SessionManager: NSObject {
     }
     
     func downloadStream(_ hlsObject: HLSObject) {
-        guard let task = session.makeAssetDownloadTask(
-            asset: hlsObject.urlAsset,
+        guard
+            let urlAsset = hlsObject.urlAsset,
+            let task = session.makeAssetDownloadTask(
+            asset: urlAsset,
             assetTitle: hlsObject.name,
             assetArtworkData: nil
 //            options: [
@@ -86,13 +90,14 @@ final internal class SessionManager: NSObject {
     }
     
     func resumeDownload(_ hlsObject: HLSObject) {
-        guard let assetDownloadTask = session.makeAssetDownloadTask(
-            asset: hlsObject.getResumeDownloadLink(),
-            assetTitle: hlsObject.name,
-            assetArtworkData: nil,
-            options: [
-                AVAssetDownloadTaskMinimumRequiredMediaBitrateKey: 0
-            ]
+        guard let resumeDownloadLink = hlsObject.getResumeDownloadLink(),
+              let assetDownloadTask = session.makeAssetDownloadTask(
+                asset: resumeDownloadLink,
+                assetTitle: hlsObject.name,
+                assetArtworkData: nil,
+                options: [
+                    AVAssetDownloadTaskMinimumRequiredMediaBitrateKey: 0
+                ]
         ) else {
             os_log("%@ => %@ => %@ => failed", log: OSLog.downloads, type: .debug, #fileID, #function, String(hlsObject.movieId))
             return
@@ -131,6 +136,20 @@ extension SessionManager: AVAssetDownloadDelegate {
         }
         
         /// Download task fail with error
+        /// If task is canceled then just skip it, else save error state
+        if error?.localizedDescription != self.cancelled,
+           let assetDownloadTask = task as? AVAssetDownloadTask,
+           let movieId = Int32(assetDownloadTask.taskDescription ?? "")
+        {
+            /// Change state to not downloaded
+            DBServices.sharedInstance.changeDownloadingStateKinoByID(withID: movieId, to: .notDownloaded)
+            
+            /// Remove from downloading map
+            downloadingMap.removeValue(forKey: assetDownloadTask)
+            
+            /// Reload download view
+            sessionManagerDelegate?.updateView(for: movieId)
+        }
     }
     
     func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask, didFinishDownloadingTo location: URL) {
@@ -226,7 +245,9 @@ extension SessionManager {
         /// Iterate through downloads list
         for downloadItem in downloadsList {
             /// If current item is not downloaded then start download, by created hls object
-            if downloadItem.downloadingState == .notDownloaded {
+            if downloadItem.downloadingState == .notDownloaded,
+               downloadItem.local_path != nil && downloadItem.local_path?.count ?? 0 > 5
+            {
                 
                 /// Safe retrieve stream url
                 guard let url = URL(string: downloadItem.url ?? "") else {
